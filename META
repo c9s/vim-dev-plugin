@@ -1,0 +1,16 @@
+
+=name           vimomni.vim
+
+=author         Cornelius
+
+=email          cornelius.howl@gmail.com
+
+=type           ftplugin
+
+=version_from   ftplugin/vim/omni.vim
+
+=vim_version    >= 7.2
+
+=libpath        .
+
+=repository git://....../
