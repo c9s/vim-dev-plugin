@@ -1,4 +1,7 @@
 
+" Plugin:  Vim Omni Completion
+" Version: 0.1
+
 let s:builtin_function_list =  [ "abs", "add", "append", "argc", "argidx",
     \"argv", "atan", "browse", "browsedir", "bufexists", "buflisted", "bufloaded",
     \"bufname", "bufnr", "bufwinnr", "byte2line", "byteidx", "call", "ceil",
