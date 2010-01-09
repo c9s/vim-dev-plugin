@@ -1,7 +1,7 @@
 
 Vim Omni Completion
 ===================
-although vim has its own completion, but it s leak of something
+although vim has its own completion (C-x C-v), but it''s leak of something
 
 vim omni supports:
 
