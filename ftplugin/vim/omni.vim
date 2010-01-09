@@ -1,6 +1,7 @@
 
 " Plugin:  Vim Omni Completion
 " Version: 0.1
+" Author:  Cornelius (林佑安)
 
 let s:builtin_function_list =  [ "abs", "add", "append", "argc", "argidx",
     \"argv", "atan", "browse", "browsedir", "bufexists", "buflisted", "bufloaded",
@@ -391,7 +392,3 @@ fun! s:RuntimeFunList()
   return list
 endf
 setlocal omnifunc=VimOmniComplete
-
-"echo s:RuntimeComList()
-"echo s:RuntimeVarList()
-"echo s:RuntimeFunList()
