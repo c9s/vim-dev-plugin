@@ -1,6 +1,6 @@
 
 " Plugin:  Vim Omni Completion
-" Version: 0.12
+" Version: 0.13
 " Author:  Cornelius (林佑安)
 
 let s:builtin_function_list =  [ "abs(", "add(", "append(", "argc(", "argidx(",
