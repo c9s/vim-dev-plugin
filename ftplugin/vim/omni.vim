@@ -3,46 +3,44 @@
 " Version: 0.12
 " Author:  Cornelius (林佑安)
 
-
-
-let s:builtin_function_list =  [ "abw(", "adw(", "appenw(", "argw(", "argidw(",
-    \"argw(", "ataw(", "browsw(", "browsediw(", "bufexistw(", "buflistew(", "bufloadew(",
-    \"bufnamw(", "bufnw(", "bufwinnw(", "byte2linw(", "byteidw(", "calw(", "ceiw(",
-    \"changenw(", "char2nw(", "cindenw(", "clearmatchew(", "cow(", "completw(",
-    \"complete_adw(", "complete_checw(", "confirw(", "copw(", "cow(", "counw(",
-    \"cscope_connectiow(", "cursow(", "deepcopw(", "deletw(", "did_filetypw(",
-    \"diff_fillew(", "diff_hlIw(", "emptw(", "escapw(", "evaw(", "eventhandlew(",
-    \"executablw(", "existw(", "expanw(", "extenw(", "feedkeyw(", "filereadablw(",
-    \"filewritablw(", "filtew(", "finddiw(", "findfilw(", "float2nw(", "floow(",
-    \"fnameescapw(", "fnamemodifw(", "foldclosew(", "foldclosedenw(", "foldlevew(",
-    \"foldtexw(", "foldtextresulw(", "foregrounw(", "functiow(", "garbagecollecw(",
-    \"gew(", "getbuflinw(", "getbufvaw(", "getchaw(", "getcharmow(", "getcmdlinw(",
-    \"getcmdpow(", "getcmdtypw(", "getcww(", "getfontnamw(", "getfperw(", "getfsizw(",
-    \"getftimw(", "getftypw(", "getlinw(", "getloclisw(", "getmatchew(", "getpiw(",
-    \"getpow(", "getqflisw(", "getrew(", "getregtypw(", "gettabwinvaw(", "getwinposw(",
-    \"getwinposw(", "getwinvaw(", "glow(", "globpatw(", "haw(", "has_kew(",
-    \"haslocaldiw(", "hasmaptw(", "histadw(", "histdew(", "histgew(", "histnw(", "hlIw(",
-    \"hlexistw(", "hostnamw(", "iconw(", "indenw(", "indew(", "inpuw(", "inputdialow(",
-    \"inputlisw(", "inputrestorw(", "inputsavw(", "inputsecrew(", "inserw(",
-    \"isdirectorw(", "islockew(", "itemw(", "joiw(", "keyw(", "lew(", "libcalw(",
-    \"libcallnw(", "linw(", "line2bytw(", "lispindenw(", "localtimw(", "log1w(", "maw(",
-    \"maparw(", "mapchecw(", "matcw(", "matchadw(", "matcharw(", "matchdeletw(",
-    \"matchenw(", "matchlisw(", "matchstw(", "maw(", "miw(", "mkdiw(", "modw(",
-    \"nextnonblanw(", "nr2chaw(", "pathshortew(", "pow(", "prevnonblanw(", "printw(",
-    \"pumvisiblw(", "rangw(", "readfilw(", "reltimw(", "reltimestw(", "remote_expw(",
-    \"remote_foregrounw(", "remote_peew(", "remote_reaw(", "remote_senw(", "removw(",
-    \"renamw(", "repeaw(", "resolvw(", "reversw(", "rounw(", "searcw(", "searchdecw(",
-    \"searchpaiw(", "searchpairpow(", "searchpow(", "server2clienw(", "serverlisw(",
-    \"setbufvaw(", "setcmdpow(", "setlinw(", "setloclisw(", "setmatchew(", "setpow(",
-    \"setqflisw(", "setrew(", "settabwinvaw(", "setwinvaw(", "shellescapw(", "simplifw(",
-    \"siw(", "sorw(", "soundfolw(", "spellbadworw(", "spellsuggesw(", "spliw(", "sqrw(",
-    \"str2floaw(", "str2nw(", "strftimw(", "stridw(", "strinw(", "strlew(", "strparw(",
-    \"strridw(", "strtranw(", "submatcw(", "substitutw(", "synIw(", "synIDattw(",
-    \"synIDtranw(", "synstacw(", "systew(", "tabpagebuflisw(", "tabpagenw(",
-    \"tabpagewinnw(", "tagfilew(", "taglisw(", "tempnamw(", "tolowew(", "touppew(", "tw(",
-    \"trunw(", "typw(", "valuew(", "virtcow(", "visualmodw(", "winbufnw(", "wincow(",
-    \"winheighw(", "winlinw(", "winnw(", "winrestcmw(", "winrestview(", "winsaveview(",
-    \"winwidtw(", "writefilw("]
+let s:builtin_function_list =  [ "abs(", "add(", "append(", "argc(", "argidx(",
+    \"argv(", "atan(", "browse(", "browsedir(", "bufexists(", "buflisted(", "bufloaded(",
+    \"bufname(", "bufnr(", "bufwinnr(", "byte2line(", "byteidx(", "call(", "ceil(",
+    \"changenr(", "char2nr(", "cindent(", "clearmatches(", "col(", "complete(",
+    \"complete_add(", "complete_check(", "confirm(", "copy(", "cos(", "count(",
+    \"cscope_connection(", "cursor(", "deepcopy(", "delete(", "did_filetype(",
+    \"diff_filler(", "diff_hlID(", "empty(", "escape(", "eval(", "eventhandler(",
+    \"executable(", "exists(", "expand(", "extend(", "feedkeys(", "filereadable(",
+    \"filewritable(", "filter(", "finddir(", "findfile(", "float2nr(", "floor(",
+    \"fnameescape(", "fnamemodify(", "foldclosed(", "foldclosedend(", "foldlevel(",
+    \"foldtext(", "foldtextresult(", "foreground(", "function(", "garbagecollect(",
+    \"get(", "getbufline(", "getbufvar(", "getchar(", "getcharmod(", "getcmdline(",
+    \"getcmdpos(", "getcmdtype(", "getcwd(", "getfontname(", "getfperm(", "getfsize(",
+    \"getftime(", "getftype(", "getline(", "getloclist(", "getmatches(", "getpid(",
+    \"getpos(", "getqflist(", "getreg(", "getregtype(", "gettabwinvar(", "getwinposx(",
+    \"getwinposy(", "getwinvar(", "glob(", "globpath(", "has(", "has_key(",
+    \"haslocaldir(", "hasmapto(", "histadd(", "histdel(", "histget(", "histnr(", "hlID(",
+    \"hlexists(", "hostname(", "iconv(", "indent(", "index(", "input(", "inputdialog(",
+    \"inputlist(", "inputrestore(", "inputsave(", "inputsecret(", "insert(",
+    \"isdirectory(", "islocked(", "items(", "join(", "keys(", "len(", "libcall(",
+    \"libcallnr(", "line(", "line2byte(", "lispindent(", "localtime(", "log10(", "map(",
+    \"maparg(", "mapcheck(", "match(", "matchadd(", "matcharg(", "matchdelete(",
+    \"matchend(", "matchlist(", "matchstr(", "max(", "min(", "mkdir(", "mode(",
+    \"nextnonblank(", "nr2char(", "pathshorten(", "pow(", "prevnonblank(", "printf(",
+    \"pumvisible(", "range(", "readfile(", "reltime(", "reltimestr(", "remote_expr(",
+    \"remote_foreground(", "remote_peek(", "remote_read(", "remote_send(", "remove(",
+    \"rename(", "repeat(", "resolve(", "reverse(", "round(", "search(", "searchdecl(",
+    \"searchpair(", "searchpairpos(", "searchpos(", "server2client(", "serverlist(",
+    \"setbufvar(", "setcmdpos(", "setline(", "setloclist(", "setmatches(", "setpos(",
+    \"setqflist(", "setreg(", "settabwinvar(", "setwinvar(", "shellescape(", "simplify(",
+    \"sin(", "sort(", "soundfold(", "spellbadword(", "spellsuggest(", "split(", "sqrt(",
+    \"str2float(", "str2nr(", "strftime(", "stridx(", "string(", "strlen(", "strpart(",
+    \"strridx(", "strtrans(", "submatch(", "substitute(", "synID(", "synIDattr(",
+    \"synIDtrans(", "synstack(", "system(", "tabpagebuflist(", "tabpagenr(",
+    \"tabpagewinnr(", "tagfiles(", "taglist(", "tempname(", "tolower(", "toupper(", "tr(",
+    \"trunc(", "type(", "values(", "virtcol(", "visualmode(", "winbufnr(", "wincol(",
+    \"winheight(", "winline(", "winnr(", "winrestcmd(", "winrestview(", "winsaveview(",
+    \"winwidth(", "writefile("]
 
 let s:builtin_command_list = [ "abclear", "argdo", "argument", "belowright",
       \"bNext", "breakdel", "buffer", "caddbuffer", "cbuffer", "cexpr", "cgetfile",
@@ -337,15 +335,18 @@ fun! VimOmniComplete(findstart, base)
         cal extend(comps,s:builtin_function_list)
         cal extend(comps,f_comps)
         cal extend(comps,s:RuntimeFunList())
+      " expr context
+      elseif t =~ '=' || t =~ '[+-/*]' || t =~ '\w\+($'
+        cal extend(comps,v_comps)
+        cal extend(comps,s:RuntimeVarList())
+        cal extend(comps,s:builtin_function_list)
+        cal extend(comps,f_comps)
+        cal extend(comps,s:RuntimeFunList())
       elseif t =~ 'set'
         cal extend(comps,s:builtin_option_list)
       elseif t =~ 'let'
         cal extend(comps,v_comps)
         cal extend(comps,s:RuntimeVarList())
-      elseif t =~ '\w\+($'
-        cal extend(comps,f_comps)
-        cal extend(comps,s:builtin_function_list)
-        cal extend(comps,s:RuntimeFunList())
       else
         cal extend(comps,f_comps)
         cal extend(comps,s:builtin_function_list)
@@ -412,7 +413,6 @@ fun! s:RuntimeFunList()
   redir END
   let list = split(flist,"\n")
   cal map(list,'substitute(v:val,''^function\s\([a-zA-Z0-9_<>#:]\+\).*'',''\1('',"")')
-  "cal map(list,'matchstr(v:val,''\(function\s\)\@<=[a-zA-Z0-9_<>#:]\+'')')
   cal map(list,'substitute(v:val,''^\(<SNR>\d\+_\)'',''s:'',"")')
   if b:g_prefix 
     cal map(list,'substitute(v:val,''^\([A-Z]\)'',''g:\1'',"")')

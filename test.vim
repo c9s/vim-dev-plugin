@@ -1,4 +1,3 @@
-
 " =================
 let g:var_test = 123
 let s:var_foo = 123
