@@ -1,6 +1,6 @@
 
 " Plugin:  Vim Omni Completion
-" Version: 0.11
+" Version: 0.12
 " Author:  Cornelius (林佑安)
 
 
