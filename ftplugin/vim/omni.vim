@@ -1,6 +1,6 @@
 " vim:fdm=marker:
 " Plugin:  Vim Omni Completion
-" Version: 0.17
+" Version: 0.18
 " Author:  Cornelius (林佑安)
 
 " builtin function {{{
