@@ -283,6 +283,34 @@ let s:builtin_option_list = ["acd", "ambiwidth", "arabicshape",
       \"t_ut", "t_vb", "t_ve", "t_vi", "t_vs", "t_WP", "t_WS", "t_xs", "t_ZH", "t_ZR",
       \"t_AF", "t_AL", "t_cd", "t_Ce", "t_cm"]
 
+let s:features = [ "all_builtin_terms", "amiga", "arabic", "arp", "autocmd",
+  \"balloon_eval", "balloon_multiline", "beos", "browse", "builtin_terms",
+  \"byte_offset", "cindent", "clientserver", "clipboard", "cmdline_compl",
+  \"cmdline_hist", "cmdline_info", "comments", "cryptv", "cscope", "compatible",
+  \"debug", "dialog_con", "dialog_gui", "diff", "digraphs", "dnd", "dos32",
+  \"dos16", "ebcdic", "emacs_tags", "eval", "ex_extra", "extra_search", "farsi",
+  \"file_in_path", "filterpipe", "find_in_path", "float", "fname_case",
+  \"folding", "footer", "fork", "gettext", "gui", "gui_athena", "gui_gtk",
+  \"gui_gtk2", "gui_gnome", "gui_mac", "gui_motif", "gui_photon", "gui_win32",
+  \"gui_win32s", "gui_running", "hangul_input", "iconv", "insert_expand",
+  \"jumplist", "keymap", "langmap", "libcall", "linebreak", "lispindent",
+  \"listcmds", "localmap", "mac", "macunix", "menu", "mksession", "modify_fname",
+  \"mouse", "mouseshape", "mouse_dec", "mouse_gpm", "mouse_netterm",
+  \"mouse_pterm", "mouse_sysmouse", "mouse_xterm", "multi_byte",
+  \"multi_byte_encoding", "multi_byte_ime", "multi_lang", "mzscheme",
+  \"netbeans_intg", "netbeans_enabled", "ole", "os2", "osfiletype", "path_extra",
+  \"perl", "postscript", "printer", "profile", "python", "qnx", "quickfix",
+  \"reltime", "rightleft", "ruby", "scrollbind", "showcmd", "signs",
+  \"smartindent", "sniff", "startuptime", "statusline", "sun_workshop", "spell",
+  \"syntax", "syntax_items", "system", "tag_binary", "tag_old_static",
+  \"tag_any_white", "tcl", "terminfo", "termresponse", "textobjects", "tgetent",
+  \"title", "toolbar", "unix", "user_commands", "viminfo", "vim_starting",
+  \"vertsplit", "virtualedit", "visual", "visualextra", "vms", "vreplace",
+  \"wildignore", "wildmenu", "windows", "winaltkeys", "win16", "win32", "win64",
+  \"win32unix", "win95", "writebackup", "xfontset", "xim", "xsmp",
+  \"xsmp_interact", "xterm_clipboard", "xterm_save", "\x11" ]
+
+
 fun! GetCache(key)
   if exists('g:__cache_' . a:key )
     return g:__cache_{a:key}
@@ -330,12 +358,17 @@ fun! VimOmniComplete(findstart, base)
     endfor
 
     if len(b:tokens) > 0
+      "echo b:tokens
+      "sleep 1
       let t = remove(b:tokens,-1)
       if t =~ 'call\?'
         cal extend(comps,s:builtin_function_list)
         cal extend(comps,f_comps)
         cal extend(comps,s:RuntimeFunList())
-
+      elseif t =~ '^has(["'']'
+        cal extend(comps,s:features)
+      elseif t =~ '^has($'
+        cal extend(comps, map(copy(s:features),'''"'' . v:val . ''")'''))
       " expr context
       elseif t =~ '[=+-/*]' || t =~ '\w\+($' || t =~ '^\(if\|else\|elseif\|while\|for\|in\)'
         cal extend(comps,v_comps)
@@ -425,3 +458,4 @@ fun! s:RuntimeFunList()
   return list
 endf
 set omnifunc=VimOmniComplete
+

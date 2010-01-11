@@ -17,3 +17,11 @@ INSTALL
 =======
 
 copy `ftplugin/vim/omni.vim` to your `~/.vim/ftplugin/vim/omni.vim`
+
+
+SCREENSHOT
+==========
+
+![](http://cloud.github.com/downloads/c9s/vimomni.vim/Screen_shot_2010-01-10_at_10.44.58_AM.png)
+![](http://cloud.github.com/downloads/c9s/vimomni.vim/Screen_shot_2010-01-10_at_10.44.45_AM.png)
+![](http://cloud.github.com/downloads/c9s/vimomni.vim/Screen_shot_2010-01-10_at_10.44.30_AM.png)
