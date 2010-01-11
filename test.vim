@@ -27,3 +27,4 @@ fun! g:Obj.foo()
 
 endf
 " =================
+com! -complete=custom,CompleteInstalledCPANModuleList 

@@ -317,6 +317,32 @@ let s:features = [
   \"win32unix", "win95", "writebackup", "xfontset", "xim", "xsmp",
   \"xsmp_interact", "xterm_clipboard", "xterm_save", "\x11" ]
 "}}}
+
+let s:command_attr = [ '-nargs=0', '-nargs=1',  '-nargs=*',  '-nargs=?',  '-nargs=+' ]
+
+let s:command_complete = [
+    \'-complete=',	
+    \'-complete=augroup',	
+    \'-complete=buffer',	
+    \'-complete=command',	
+    \'-complete=dir',		
+    \'-complete=environment',	
+    \'-complete=event',		
+    \'-complete=expression',	
+    \'-complete=file',		
+    \'-complete=shellcmd',	
+    \'-complete=function',	
+    \'-complete=help',		
+    \'-complete=highlight',	
+    \'-complete=mapping',	
+    \'-complete=menu',		
+    \'-complete=option',	
+    \'-complete=tag',		
+    \'-complete=tag_listfiles',	
+    \'-complete=var',		
+    \'-complete=custom,',
+    \'-complete=customlist,']
+
 " autocmd {{{
 let s:autocmd_events = [
   \"BufNewFile", "BufReadPre", "BufRead", "BufReadPost", "BufReadCmd",
@@ -349,7 +375,7 @@ endf
 fun! SetCache(key,val)
   let g:__cache_{a:key} = a:val
 endf"}}}
-fun! VimOmniComplete(findstart, base)"{{{
+fun! VimOmniComplete(findstart, base) "{{{
   if a:findstart
     let start = col('.') - 1
     let line = getline('.')
@@ -384,13 +410,23 @@ fun! VimOmniComplete(findstart, base)"{{{
     endfor
 
     if len(b:tokens) > 0
-      "echo b:tokens
-      "sleep 1
+      echo b:tokens
+      sleep 1
+      let first = b:tokens[0]
       let t = remove(b:tokens,-1)
       if t =~ 'call\?'
         cal extend(comps,s:builtin_function_list)
         cal extend(comps,f_comps)
         cal extend(comps,s:RuntimeFunList())
+      elseif first =~ 'com\%[mand]!\?' && t =~ '-complete=custom\(list\)\?,$'
+        cal extend(comps,s:builtin_function_list)
+        cal extend(comps,f_comps)
+        cal extend(comps,s:RuntimeFunList())
+        " little patch for command completion function name
+        cal map(comps,'substitute(v:val,"($","","")')
+      elseif first =~ 'com\%[mand]!\?'
+        cal extend(comps,s:command_attr)
+        cal extend(comps,s:command_complete)
       elseif t =~ 'au\%[tocmd]!\?'
         cal extend(comps,s:autocmd_events)
       elseif t =~ '^has(["'']'
@@ -429,7 +465,7 @@ fun! VimOmniComplete(findstart, base)"{{{
     return comps
   endif
 endf"}}}
-fun! s:RuntimeComList()"{{{
+fun! s:RuntimeComList() "{{{
   let c = GetCache('vim_runtime_cmd')
   if type(c) == 3
     return c
@@ -445,7 +481,7 @@ fun! s:RuntimeComList()"{{{
   cal SetCache('vim_runtime_cmd',list)
   return list
 endf"}}}
-fun! s:RuntimeVarList()"{{{
+fun! s:RuntimeVarList() "{{{
   let c = GetCache('vim_runtime_var' . b:g_prefix)
   if type(c) == 3
     return c
@@ -462,7 +498,7 @@ fun! s:RuntimeVarList()"{{{
   cal SetCache('vim_runtime_var' . b:g_prefix ,list)
   return list
 endf"}}}
-fun! s:RuntimeFunList()"{{{
+fun! s:RuntimeFunList() "{{{
   let c = GetCache('vim_runtime_fun' . b:g_prefix)
   if type(c) == 3
     return c
@@ -477,22 +513,22 @@ fun! s:RuntimeFunList()"{{{
   if b:g_prefix 
     cal map(list,'substitute(v:val,''^\([A-Z]\)'',''g:\1'',"")')
   endif
-
   cal extend(list,s:AutoloadPrefixes(list))
-
   cal SetCache('vim_runtime_fun' . b:g_prefix,list)
   return list
-endf"}}}
-fun! s:AutoloadPrefixes(funcs)"{{{
+endf "}}}
+fun! s:AutoloadPrefixes(funcs) "{{{
   let funcs = filter(copy(a:funcs),'v:val =~ ''\w\+#''')
   let heads = { }
   for f in funcs 
     let parts = split(f,'#')
     while len(parts) > 0
       cal remove(parts,-1)
-      let heads[ join(parts,"#") . '#' ] = 1
+      if len(parts) > 0
+        let heads[ join(parts,"#") . '#' ] = 1
+      endif
     endwhile
   endfor
   return keys(heads)
-endf"}}}
+endf "}}}
 set omnifunc=VimOmniComplete
