@@ -3,7 +3,8 @@
 " Version: 0.16
 " Author:  Cornelius (林佑安)
 
-let s:builtin_function_list =  [ "{{{
+" builtin function {{{
+let s:builtin_function_list =  [
     \"abs(", "add(", "append(", "argc(", "argidx(",
     \"argv(", "atan(", "browse(", "browsedir(", "bufexists(", "buflisted(", "bufloaded(",
     \"bufname(", "bufnr(", "bufwinnr(", "byte2line(", "byteidx(", "call(", "ceil(",
@@ -42,7 +43,8 @@ let s:builtin_function_list =  [ "{{{
     \"trunc(", "type(", "values(", "virtcol(", "visualmode(", "winbufnr(", "wincol(",
     \"winheight(", "winline(", "winnr(", "winrestcmd(", "winrestview(", "winsaveview(",
     \"winwidth(", "writefile("]"}}}
-let s:builtin_command_list = ["{{{
+" builtin commands {{{
+let s:builtin_command_list = [
       \"abclear", "argdo", "argument", "belowright",
       \"bNext", "breakdel", "buffer", "caddbuffer", "cbuffer", "cexpr", "cgetfile",
       \"checktime", "cnewer", "colder", "continue", "cquit", "delcommand", "diffoff",
@@ -103,8 +105,10 @@ let s:builtin_command_list = ["{{{
       \"breakadd", "bufdo", "cabclear", "catch", "center", "cgetexpr", "checkpath",
       \"cmapclear", "cNfile", "confirm", "cprevious", "debuggreedy", "diffget",
       \"diffthis", "dlist", "echoerr", "elseif", "endif", "exit", "finally", "fold",
-      \"for" ]"}}}
-let s:builtin_option_list = ["{{{
+      \"for" ]
+"}}}
+" options {{{
+let s:builtin_option_list = [
       \"acd", "ambiwidth", "arabicshape",
       \"autowriteall", "backupdir", "bdlay", "binary", "breakat", "bufhidden",
       \"cdpath", "cin", "cinwords", "columns", "completeopt", "cpo",
@@ -282,8 +286,10 @@ let s:builtin_option_list = ["{{{
       \"t_me", "t_mr", "t_ms", "t_nd", "t_op", "t_RI", "t_RV", "t_Sb", "t_se",
       \"t_Sf", "t_SI", "t_so", "t_sr", "t_te", "t_ti", "t_ts", "t_ue", "t_us",
       \"t_ut", "t_vb", "t_ve", "t_vi", "t_vs", "t_WP", "t_WS", "t_xs", "t_ZH", "t_ZR",
-      \"t_AF", "t_AL", "t_cd", "t_Ce", "t_cm"]"}}}
-let s:features = ["{{{
+      \"t_AF", "t_AL", "t_cd", "t_Ce", "t_cm"]
+"}}}
+" features {{{
+let s:features = [
   \"all_builtin_terms", "amiga", "arabic", "arp", "autocmd",
   \"balloon_eval", "balloon_multiline", "beos", "browse", "builtin_terms",
   \"byte_offset", "cindent", "clientserver", "clipboard", "cmdline_compl",
@@ -309,8 +315,10 @@ let s:features = ["{{{
   \"vertsplit", "virtualedit", "visual", "visualextra", "vms", "vreplace",
   \"wildignore", "wildmenu", "windows", "winaltkeys", "win16", "win32", "win64",
   \"win32unix", "win95", "writebackup", "xfontset", "xim", "xsmp",
-  \"xsmp_interact", "xterm_clipboard", "xterm_save", "\x11" ]"}}}
-let s:autocmd_events = ["{{{
+  \"xsmp_interact", "xterm_clipboard", "xterm_save", "\x11" ]
+"}}}
+" autocmd {{{
+let s:autocmd_events = [
   \"BufNewFile", "BufReadPre", "BufRead", "BufReadPost", "BufReadCmd",
   \"FileReadPre", "FileReadPost", "FileReadCmd", "FilterReadPre",
   \"FilterReadPost", "StdinReadPre", "StdinReadPost", "BufWrite", "BufWritePre",
@@ -327,7 +335,8 @@ let s:autocmd_events = ["{{{
   \"CursorHoldI", "CursorMoved", "CursorMovedI", "WinEnter", "WinLeave",
   \"TabEnter", "TabLeave", "CmdwinEnter", "CmdwinLeave", "InsertEnter",
   \"InsertChange", "InsertLeave", "ColorScheme", "RemoteReply", "QuickFixCmdPre",
-  \"QuickFixCmdPost", "SessionLoadPost", "MenuPopup", "User" ]"}}}
+  \"QuickFixCmdPost", "SessionLoadPost", "MenuPopup", "User" ]
+"}}}
 " Cache Functions {{{
 fun! GetCache(key)
   if exists('g:__cache_' . a:key )
