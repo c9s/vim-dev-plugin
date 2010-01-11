@@ -424,8 +424,8 @@ fun! VimOmniComplete(findstart, base) "{{{
     endfor
 
     if len(b:tokens) > 0
-      echo b:tokens
-      sleep 1
+      "echo b:tokens
+      "sleep 1
       let first = b:tokens[0]
       let t = remove(b:tokens,-1)
       if t =~ 'call\?'
@@ -546,3 +546,4 @@ fun! s:AutoloadPrefixes(funcs) "{{{
   return keys(heads)
 endf "}}}
 set omnifunc=VimOmniComplete
+
