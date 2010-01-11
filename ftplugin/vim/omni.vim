@@ -310,6 +310,23 @@ let s:features = [ "all_builtin_terms", "amiga", "arabic", "arp", "autocmd",
   \"win32unix", "win95", "writebackup", "xfontset", "xim", "xsmp",
   \"xsmp_interact", "xterm_clipboard", "xterm_save", "\x11" ]
 
+let s:autocmd_events = [ "BufNewFile", "BufReadPre", "BufRead", "BufReadPost", "BufReadCmd",
+  \"FileReadPre", "FileReadPost", "FileReadCmd", "FilterReadPre",
+  \"FilterReadPost", "StdinReadPre", "StdinReadPost", "BufWrite", "BufWritePre",
+  \"BufWritePost", "BufWriteCmd", "FileWritePre", "FileWritePost",
+  \"FileWriteCmd", "FileAppendPre", "FileAppendPost", "FileAppendCmd",
+  \"FilterWritePre", "FilterWritePost", "BufAdd", "BufCreate", "BufDelete",
+  \"BufWipeout", "BufFilePre", "BufFilePost", "BufEnter", "BufLeave",
+  \"BufWinEnter", "BufWinLeave", "BufUnload", "BufHidden", "BufNew",
+  \"SwapExists", "FileType", "Syntax", "EncodingChanged", "TermChanged",
+  \"VimEnter", "GUIEnter", "TermResponse", "VimLeavePre", "VimLeave",
+  \"FileChangedShell", "FileChangedShellPost", "FileChangedRO", "ShellCmdPost",
+  \"ShellFilterPost", "FuncUndefined", "SpellFileMissing", "SourcePre",
+  \"SourceCmd", "VimResized", "FocusGained", "FocusLost", "CursorHold",
+  \"CursorHoldI", "CursorMoved", "CursorMovedI", "WinEnter", "WinLeave",
+  \"TabEnter", "TabLeave", "CmdwinEnter", "CmdwinLeave", "InsertEnter",
+  \"InsertChange", "InsertLeave", "ColorScheme", "RemoteReply", "QuickFixCmdPre",
+  \"QuickFixCmdPost", "SessionLoadPost", "MenuPopup", "User" ]
 
 fun! GetCache(key)
   if exists('g:__cache_' . a:key )
@@ -365,6 +382,8 @@ fun! VimOmniComplete(findstart, base)
         cal extend(comps,s:builtin_function_list)
         cal extend(comps,f_comps)
         cal extend(comps,s:RuntimeFunList())
+      elseif t =~ 'au\%[tocmd]!\?'
+        cal extend(comps,s:autocmd_events)
       elseif t =~ '^has(["'']'
         cal extend(comps,s:features)
       elseif t =~ '^has($'
@@ -458,4 +477,3 @@ fun! s:RuntimeFunList()
   return list
 endf
 set omnifunc=VimOmniComplete
-
