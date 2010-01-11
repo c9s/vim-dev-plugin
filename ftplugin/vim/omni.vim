@@ -477,3 +477,7 @@ fun! s:RuntimeFunList()
   return list
 endf
 set omnifunc=VimOmniComplete
+"cal fu  " give fuf#
+"cal fuf#   " give fuf#.*
+"cal fuf#xx  " give fuf#xx#.*
+

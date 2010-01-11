@@ -5,13 +5,14 @@ although vim has its own completion (C-x C-v), but it''s leak of something
 
 vim omni supports:
 
-    * builtin command completion.
-    * builtin function completion.
+    * builtin command name completion.
+    * builtin function name completion.
     * runtime command completion.
     * runtime function name completion.
     * g:,s:.. scope completion.
-    * context completion.
     * option name completion.
+    * autocommand event name completion
+    * feature name completion.
 
 INSTALL
 =======
