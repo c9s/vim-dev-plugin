@@ -1,9 +1,10 @@
-
+" vim:fdm=marker:
 " Plugin:  Vim Omni Completion
 " Version: 0.15
 " Author:  Cornelius (林佑安)
 
-let s:builtin_function_list =  [ "abs(", "add(", "append(", "argc(", "argidx(",
+let s:builtin_function_list =  [ "{{{
+    \"abs(", "add(", "append(", "argc(", "argidx(",
     \"argv(", "atan(", "browse(", "browsedir(", "bufexists(", "buflisted(", "bufloaded(",
     \"bufname(", "bufnr(", "bufwinnr(", "byte2line(", "byteidx(", "call(", "ceil(",
     \"changenr(", "char2nr(", "cindent(", "clearmatches(", "col(", "complete(",
@@ -40,9 +41,9 @@ let s:builtin_function_list =  [ "abs(", "add(", "append(", "argc(", "argidx(",
     \"tabpagewinnr(", "tagfiles(", "taglist(", "tempname(", "tolower(", "toupper(", "tr(",
     \"trunc(", "type(", "values(", "virtcol(", "visualmode(", "winbufnr(", "wincol(",
     \"winheight(", "winline(", "winnr(", "winrestcmd(", "winrestview(", "winsaveview(",
-    \"winwidth(", "writefile("]
-
-let s:builtin_command_list = [ "abclear", "argdo", "argument", "belowright",
+    \"winwidth(", "writefile("]"}}}
+let s:builtin_command_list = ["{{{
+      \"abclear", "argdo", "argument", "belowright",
       \"bNext", "breakdel", "buffer", "caddbuffer", "cbuffer", "cexpr", "cgetfile",
       \"checktime", "cnewer", "colder", "continue", "cquit", "delcommand", "diffoff",
       \"diffupdate", "drop", "echomsg", "emenu", "endtry", "exusage", "find",
@@ -102,9 +103,9 @@ let s:builtin_command_list = [ "abclear", "argdo", "argument", "belowright",
       \"breakadd", "bufdo", "cabclear", "catch", "center", "cgetexpr", "checkpath",
       \"cmapclear", "cNfile", "confirm", "cprevious", "debuggreedy", "diffget",
       \"diffthis", "dlist", "echoerr", "elseif", "endif", "exit", "finally", "fold",
-      \"for" ]
-
-let s:builtin_option_list = ["acd", "ambiwidth", "arabicshape",
+      \"for" ]"}}}
+let s:builtin_option_list = ["{{{
+      \"acd", "ambiwidth", "arabicshape",
       \"autowriteall", "backupdir", "bdlay", "binary", "breakat", "bufhidden",
       \"cdpath", "cin", "cinwords", "columns", "completeopt", "cpo",
       \"cscopetagorder", "csverb", "deco", "dictionary", "directory", "ed",
@@ -281,9 +282,9 @@ let s:builtin_option_list = ["acd", "ambiwidth", "arabicshape",
       \"t_me", "t_mr", "t_ms", "t_nd", "t_op", "t_RI", "t_RV", "t_Sb", "t_se",
       \"t_Sf", "t_SI", "t_so", "t_sr", "t_te", "t_ti", "t_ts", "t_ue", "t_us",
       \"t_ut", "t_vb", "t_ve", "t_vi", "t_vs", "t_WP", "t_WS", "t_xs", "t_ZH", "t_ZR",
-      \"t_AF", "t_AL", "t_cd", "t_Ce", "t_cm"]
-
-let s:features = [ "all_builtin_terms", "amiga", "arabic", "arp", "autocmd",
+      \"t_AF", "t_AL", "t_cd", "t_Ce", "t_cm"]"}}}
+let s:features = ["{{{
+  \"all_builtin_terms", "amiga", "arabic", "arp", "autocmd",
   \"balloon_eval", "balloon_multiline", "beos", "browse", "builtin_terms",
   \"byte_offset", "cindent", "clientserver", "clipboard", "cmdline_compl",
   \"cmdline_hist", "cmdline_info", "comments", "cryptv", "cscope", "compatible",
@@ -308,9 +309,9 @@ let s:features = [ "all_builtin_terms", "amiga", "arabic", "arp", "autocmd",
   \"vertsplit", "virtualedit", "visual", "visualextra", "vms", "vreplace",
   \"wildignore", "wildmenu", "windows", "winaltkeys", "win16", "win32", "win64",
   \"win32unix", "win95", "writebackup", "xfontset", "xim", "xsmp",
-  \"xsmp_interact", "xterm_clipboard", "xterm_save", "\x11" ]
-
-let s:autocmd_events = [ "BufNewFile", "BufReadPre", "BufRead", "BufReadPost", "BufReadCmd",
+  \"xsmp_interact", "xterm_clipboard", "xterm_save", "\x11" ]"}}}
+let s:autocmd_events = ["{{{
+  \"BufNewFile", "BufReadPre", "BufRead", "BufReadPost", "BufReadCmd",
   \"FileReadPre", "FileReadPost", "FileReadCmd", "FilterReadPre",
   \"FilterReadPost", "StdinReadPre", "StdinReadPost", "BufWrite", "BufWritePre",
   \"BufWritePost", "BufWriteCmd", "FileWritePre", "FileWritePost",
@@ -326,8 +327,8 @@ let s:autocmd_events = [ "BufNewFile", "BufReadPre", "BufRead", "BufReadPost", "
   \"CursorHoldI", "CursorMoved", "CursorMovedI", "WinEnter", "WinLeave",
   \"TabEnter", "TabLeave", "CmdwinEnter", "CmdwinLeave", "InsertEnter",
   \"InsertChange", "InsertLeave", "ColorScheme", "RemoteReply", "QuickFixCmdPre",
-  \"QuickFixCmdPost", "SessionLoadPost", "MenuPopup", "User" ]
-
+  \"QuickFixCmdPost", "SessionLoadPost", "MenuPopup", "User" ]"}}}
+" Cache Functions {{{
 fun! GetCache(key)
   if exists('g:__cache_' . a:key )
     return g:__cache_{a:key}
@@ -338,9 +339,8 @@ endf
 
 fun! SetCache(key,val)
   let g:__cache_{a:key} = a:val
-endf
-
-fun! VimOmniComplete(findstart, base)
+endf"}}}
+fun! VimOmniComplete(findstart, base)"{{{
   if a:findstart
     let start = col('.') - 1
     let line = getline('.')
@@ -419,9 +419,8 @@ fun! VimOmniComplete(findstart, base)
     cal sort(comps)
     return comps
   endif
-endf
-
-fun! s:RuntimeComList()
+endf"}}}
+fun! s:RuntimeComList()"{{{
   let c = GetCache('vim_runtime_cmd')
   if type(c) == 3
     return c
@@ -436,10 +435,8 @@ fun! s:RuntimeComList()
 
   cal SetCache('vim_runtime_cmd',list)
   return list
-endf
-
-
-fun! s:RuntimeVarList()
+endf"}}}
+fun! s:RuntimeVarList()"{{{
   let c = GetCache('vim_runtime_var' . b:g_prefix)
   if type(c) == 3
     return c
@@ -455,9 +452,8 @@ fun! s:RuntimeVarList()
   endif
   cal SetCache('vim_runtime_var' . b:g_prefix ,list)
   return list
-endf
-
-fun! s:RuntimeFunList()
+endf"}}}
+fun! s:RuntimeFunList()"{{{
   let c = GetCache('vim_runtime_fun' . b:g_prefix)
   if type(c) == 3
     return c
@@ -473,11 +469,21 @@ fun! s:RuntimeFunList()
     cal map(list,'substitute(v:val,''^\([A-Z]\)'',''g:\1'',"")')
   endif
 
+  cal extend(list,s:AutoloadPrefixes(list))
+
   cal SetCache('vim_runtime_fun' . b:g_prefix,list)
   return list
-endf
+endf"}}}
+fun! s:AutoloadPrefixes(funcs)"{{{
+  let funcs = filter(copy(a:funcs),'v:val =~ ''\w\+#''')
+  let heads = { }
+  for f in funcs 
+    let parts = split(f,'#')
+    while len(parts) > 0
+      cal remove(parts,-1)
+      let heads[ join(parts,"#") . '#' ] = 1
+    endwhile
+  endfor
+  return keys(heads)
+endf"}}}
 set omnifunc=VimOmniComplete
-"cal fu  " give fuf#
-"cal fuf#   " give fuf#.*
-"cal fuf#xx  " give fuf#xx#.*
-
