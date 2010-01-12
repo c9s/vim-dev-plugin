@@ -14,11 +14,33 @@ vim omni supports:
     * autocommand event name completion
     * feature name completion.
 
+
 INSTALL
 =======
 
 copy `ftplugin/vim/omni.vim` to your `~/.vim/ftplugin/vim/omni.vim`
 
+
+USE
+======
+
+function name:
+    cal <C-x><C-o>
+
+command name:
+    com! <C-x><C-o>
+
+var name:
+    let g:<C-x><C-o>
+
+autocmd event:
+    autocmd <C-x><C-o>
+
+option name:
+    set <C-x><C-o>
+
+feature name:
+    if has(<C-x><C-o>
 
 SCREENSHOT
 ==========
