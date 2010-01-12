@@ -1,6 +1,6 @@
 " vim:fdm=marker:
 " Plugin:  Vim Omni Completion
-" Version: 0.2
+" Version: 0.21
 " Author:  Cornelius (林佑安)
 " Email:   cornelius.howl@gmail.com
 
@@ -576,3 +576,4 @@ fun! s:AutoloadPrefixes(funcs) "{{{
   return keys(heads)
 endf "}}}
 set omnifunc=VimOmniComplete
+
