@@ -1,6 +1,6 @@
 " vim:fdm=marker:
 " Plugin:  Vim Omni Completion
-" Version: 0.21
+" Version: 0.22
 " Author:  Cornelius (林佑安)
 " Email:   cornelius.howl@gmail.com
 
