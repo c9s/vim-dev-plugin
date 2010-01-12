@@ -4,6 +4,9 @@
 " Author:  Cornelius (林佑安)
 " Email:   cornelius.howl@gmail.com
 
+
+let s:debug = 0
+
 " builtin function {{{
 let s:builtin_function_list =  [
     \"abs(", "add(", "append(", "argc(", "argidx(",
@@ -289,6 +292,9 @@ let s:builtin_option_list = [
       \"t_ut", "t_vb", "t_ve", "t_vi", "t_vs", "t_WP", "t_WS", "t_xs", "t_ZH", "t_ZR",
       \"t_AF", "t_AL", "t_cd", "t_Ce", "t_cm"]
 "}}}
+
+let s:mapargments = [ "<buffer>", "<silent>", "<special>", "<script>", "<expr>","<unique>" ]
+
 " features {{{
 let s:features = [
   \"all_builtin_terms", "amiga", "arabic", "arp", "autocmd",
@@ -396,7 +402,7 @@ fun! VimOmniComplete(findstart, base) "{{{
     while start > 0 && line[start - 1] =~ '[a-zA-Z-_:#.]' 
       let start -= 1
     endwhile
-    let b:context = strpart( getline('.') , 0 , start )
+    let b:context = strpart( getline('.') , 0 , start + 1 )
     let b:tokens  = split(b:context,'\s\+')
     return start
   else
@@ -424,14 +430,38 @@ fun! VimOmniComplete(findstart, base) "{{{
     endfor
 
     if len(b:tokens) > 0
-      "echo b:tokens
-      "sleep 1
+
+      if s:debug
+        echo b:tokens
+        sleep 1
+        echo b:context
+        sleep 1
+      endif
+
       let first = b:tokens[0]
       let t = remove(b:tokens,-1)
+
+      if s:debug
+        echo first
+        sleep 1
+        echo t
+        sleep 1
+      endif
+
       if t =~ 'call\?'
         cal extend(comps,s:builtin_function_list)
         cal extend(comps,f_comps)
         cal extend(comps,s:RuntimeFunList())
+      elseif first =~ '[nvic]\?map$'
+        cal extend(comps,s:mapargments)
+        if t == ':'
+          let coms = [ ]
+          cal extend(coms,s:builtin_command_list)
+          cal extend(coms,s:RuntimeComList())
+          cal map(coms,'":".v:val')
+          cal extend(comps,coms)
+        endif
+      " command completion
       elseif first =~ 'com\%[mand]!\?' && t =~ '-complete=custom\(list\)\?,$'
         cal extend(comps,s:builtin_function_list)
         cal extend(comps,f_comps)
@@ -546,4 +576,3 @@ fun! s:AutoloadPrefixes(funcs) "{{{
   return keys(heads)
 endf "}}}
 set omnifunc=VimOmniComplete
-
