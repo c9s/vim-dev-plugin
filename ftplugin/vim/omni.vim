@@ -404,6 +404,11 @@ fun! VimOmniComplete(findstart, base) "{{{
     endwhile
     let b:context = strpart( getline('.') , 0 , start + 1 )
     let b:tokens  = split(b:context,'\s\+')
+
+    if b:context =~ '-complete=$'
+      return col('.') - strlen('-complete=') - 1
+    endif
+
     return start
   else
     let b:g_prefix = 0
