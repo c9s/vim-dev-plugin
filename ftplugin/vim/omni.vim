@@ -490,7 +490,7 @@ fun! VimOmniComplete(findstart, base) "{{{
         cal extend(comps,f_comps)
         cal extend(comps,s:RuntimeFunList())
       " option context
-      elseif t =~ 'set'
+      elseif t =~ 'set\%[local]'
         cal extend(comps,s:builtin_option_list)
       " variable declare context
       elseif t =~ 'let'
