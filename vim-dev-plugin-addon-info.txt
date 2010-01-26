@@ -1,0 +1,14 @@
+{
+  "name" : "vim-dev",
+  "version" : "0.1",
+  "author" : "Marc Weber <marco-oweber@gmx.de> and Cornelius Howl <cornelius.howl@gmail.com>",
+  "maintainer" : "see author",
+  "repository" : {"type": "git", "url": "git://github.com/c9s/vim-dev-plugin.git"},
+  "dependencies" : {
+    "tlib": {},
+    "vim-addon-mw-utils": {},
+    "vim-addon-goto-thing-at-cursor": {},
+  },
+  "description" : "vim omni completion and more"
+}
+
