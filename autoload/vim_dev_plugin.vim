@@ -2,8 +2,11 @@
 " Plugin:  Vim Omni Completion
 " Version: 0.22
 " Author:  Cornelius (林佑安)
+" Contributor: Marc Weber (marco-oweber@gmx.de)
 " Email:   cornelius.howl@gmail.com
 
+if !exists('g:vim_dev') | let g:vim_dev = {} | endif | let s:c = g:vim_dev 
+let s:c['vim_scan_func'] = get(s:c, 'vim_scan_func', {'func' : funcref#Function('vim_dev_plugin#ScanFunc'), 'version': 1, 'use_file_cache':1} )
 
 let s:debug = 0
 
@@ -511,7 +514,25 @@ fun! vim_dev_plugin#VimOmniComplete(findstart, base) "{{{
     endif
     cal filter(comps, "v:val =~ '^" . a:base . "'" )
     cal sort(comps)
-    return comps
+
+    for c in comps
+      call complete_add(c)
+    endfor
+
+    " scanning Vim files the first time will take time..
+    " take functions from autoload directories
+    let autoload_functions = vim_dev_plugin#ListOfAutoloadFiles()
+    for file  in values(autoload_functions)
+      if complete_check() | return [] | endif
+      let file_content = cached_file_contents#CachedFileContents(file,
+            \ s:c['vim_scan_func'], 0)
+      let functions = keys(file_content['declared autoload functions'])
+      cal filter(functions, "v:val =~ '^" . a:base . "'" )
+      for f in functions
+	call complete_add(f)
+      endfor
+    endfor
+
   endif
 endf"}}}
 fun! s:RuntimeComList() "{{{
@@ -580,3 +601,102 @@ fun! s:AutoloadPrefixes(funcs) "{{{
   endfor
   return keys(heads)
 endf "}}}
+
+" scan func - simple .vim file parser It can collect used and defined autoload functions "{{{1
+
+let s:vl_regex = {}
+let s:vl_regex['fap']='\%(\w\+#\)\+' " match function autoload prefix ( blah#foo#)
+let s:vl_regex['ofp']='\%(\w\+#\)*' " optional match function location prefix ( blah#foo#)
+let s:vl_regex['fp']='\%('.s:vl_regex['ofp'].'\|s:\|g:\)' " match any (or no function prefix)
+let s:vl_regex['Fn']='\w*'  " match function name
+let s:vl_regex['uFn']='\u\w*'  " match user function name
+let s:vl_regex['function']='^\s*fun\%(ction\)\=!\=\s\+'
+" match function declaration and get function name / doesn't match fun s:Name
+let s:vl_regex['fn_decl']=s:vl_regex['function'].'\zs'.s:vl_regex['fp'].s:vl_regex['uFn'].'\ze('
+
+fun! vim_dev_plugin#ScanFunc(filename)
+  let lines = readfile(a:filename)
+
+  let declared_functions = vim_dev_plugin#GetAllDeclaredFunctions(
+				      \ lines)
+  let declared_autoload_functions = filter(deepcopy(declared_functions),
+	      \ 'v:key =~ '.string(s:vl_regex['fap'].s:vl_regex['uFn']))
+  let used_user_functions = vim_dev_plugin#GetAllUsedUserFunctions(
+				      \ lines)
+  let used_autoload_functions = filter(deepcopy(used_user_functions),
+	      \ 'v:key =~ '.string(s:vl_regex['fap'].s:vl_regex['uFn']))
+  let g:c = s:vl_regex['fap'].s:vl_regex['uFn']
+  return { 'declared functions' : declared_functions
+       \ , 'declared autoload functions' : declared_autoload_functions
+       \ , 'used autoload functions' : used_autoload_functions
+       \ , 'used user functions' : used_user_functions
+       \ }
+
+endf
+
+" returns dictionary { "<functionname>" : <line_nr> , ... }
+function! vim_dev_plugin#GetAllDeclaredFunctions(file_as_string_list)
+  let functions = {}
+  let line_nr = 1
+  for l in a:file_as_string_list
+    let function = matchstr(l,s:vl_regex['fn_decl'])
+      if function !=  ""
+	let functions[function] = line_nr
+      endif
+    let line_nr = line_nr + 1
+  endfor
+  return functions
+endfunction
+
+" returns a dictionary { "function name": linenr, ...}
+" thus the last occurence will be listed
+function! vim_dev_plugin#GetAllUsedUserFunctions(file_as_string_list)
+  let file = a:file_as_string_list
+  let result = {}
+  let line_nr=1
+  for l in file
+    if l =~ '^\s*"' || l =~ s:vl_regex['fn_decl']
+      let line_nr = line_nr + 1
+      continue " simple comment handling.. can be improved much
+	       " also continue on function declarations
+    endif
+    let matches = map(split(l,s:vl_regex['fp'].s:vl_regex['uFn'].'(\zs\ze'),"matchstr(v:val,'".s:vl_regex['fp'].s:vl_regex['uFn']."(')")
+    for m in map(matches,"substitute(v:val,'($','','')")
+      if m == ""
+	continue
+      endif
+      if !exists("result['".m."']")
+	let result[m] = line_nr
+      endif
+    endfor
+    let line_nr = line_nr+1
+  endfor
+  return result
+endfunction
+
+" path/autoload/foo/bar.vim -> foo#bar
+fun! vim_dev_plugin#GetPrefix(path)
+  return substitute(matchstr(a:path,'.*autoload[/\\]\zs.*\ze\.vim$'),'[/\\]','#','g')
+endf
+
+
+" returns list of all used autoload files
+" If you have 2 autoload/file.vim files
+" the one beeing first in runtimepath will be used
+" returns dictionary { "prefix": "file", ... }
+" file autoload/blah/ehh.vim results in prefix
+" blah#
+function! vim_dev_plugin#ListOfAutoloadFiles()
+  let files = {}
+  for path in reverse(split(&runtimepath,','))
+    for file in split(globpath(expand(path.'/autoload'),"**/*.vim"),"\n")
+      let prefix = vim_dev_plugin#GetPrefix(file)
+      if !has_key(files, prefix)
+        let files[prefix] = file
+      endif
+    endfor
+  endfor
+  return files
+endfunction
+
+" vim:fdm=marker
