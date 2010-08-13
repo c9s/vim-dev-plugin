@@ -1,1 +1,0 @@
-set omnifunc=vim_dev_plugin#VimOmniComplete

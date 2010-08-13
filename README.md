@@ -48,3 +48,8 @@ SCREENSHOT
 ![](http://cloud.github.com/downloads/c9s/vimomni.vim/Screen_shot_2010-01-10_at_10.44.58_AM.png)
 ![](http://cloud.github.com/downloads/c9s/vimomni.vim/Screen_shot_2010-01-10_at_10.44.45_AM.png)
 ![](http://cloud.github.com/downloads/c9s/vimomni.vim/Screen_shot_2010-01-10_at_10.44.30_AM.png)
+
+
+CUSTOMIZATION:
+===============
+If you dislike camel case matching see vim-addon-ocmpletion how to override the default

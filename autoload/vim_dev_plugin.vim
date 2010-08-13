@@ -415,6 +415,11 @@ fun! vim_dev_plugin#VimOmniComplete(findstart, base) "{{{
     return start
   else
     let b:g_prefix = 0
+
+    let patterns = vim_addon_completion#AdditionalCompletionMatchPatterns(a:base
+          \ , "vim_dev_plugin_completion_func", {'match_beginning_of_string': 0})
+    let additional_regex = get(patterns, 'vim_regex', "")
+
     if a:base =~ '^g:'
       let b:g_prefix = 1
     endif
@@ -512,7 +517,9 @@ fun! vim_dev_plugin#VimOmniComplete(findstart, base) "{{{
       cal extend(comps,c_comps)
       cal extend(comps,s:RuntimeComList())
     endif
-    cal filter(comps, "v:val =~ '^" . a:base . "'" )
+
+    let v_val_filter = "v:val =~ '^" . a:base . "'" .( additional_regex == "" ? "" : '|| v:val =~ '.string('^\%(.*#\)\?'.additional_regex)  )
+    cal filter(comps, v_val_filter )
     cal sort(comps)
 
     for c in comps
@@ -527,7 +534,7 @@ fun! vim_dev_plugin#VimOmniComplete(findstart, base) "{{{
       let file_content = cached_file_contents#CachedFileContents(file,
             \ s:c['vim_scan_func'], 0)
       let functions = keys(file_content['declared autoload functions'])
-      cal filter(functions, "v:val =~ '^" . a:base . "'" )
+      cal filter(functions, v_val_filter )
       for f in functions
 	call complete_add(f)
       endfor
