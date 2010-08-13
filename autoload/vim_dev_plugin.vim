@@ -518,7 +518,7 @@ fun! vim_dev_plugin#VimOmniComplete(findstart, base) "{{{
       cal extend(comps,s:RuntimeComList())
     endif
 
-    let v_val_filter = "v:val =~ '^" . a:base . "'" .( additional_regex == "" ? "" : '|| v:val =~ '.string('^\%(.*#\)\?'.additional_regex)  )
+    let v_val_filter = "v:val =~ ".string('^\%(.*#\)\?'.a:base).' '.( additional_regex == "" ? "" : '|| v:val =~ '.string('^\%(.*#\)\?'.additional_regex)  )
     cal filter(comps, v_val_filter )
     cal sort(comps)
 
