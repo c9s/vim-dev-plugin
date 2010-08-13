@@ -706,4 +706,56 @@ function! vim_dev_plugin#ListOfAutoloadFiles()
   return files
 endfunction
 
+
+fun! s:SplitCurrentLineAtCursor()
+  let pos = col('.') -1
+  let line = getline('.')
+  return [strpart(line,0,pos), strpart(line, pos, len(line)-pos)]
+endfunction
+
+"|func only works with autoload functions 
+"|     is intended to be used with vim-addon-goto-thing-at-cursor to jump to files.
+"|     limitation: only finds first match (because FileInDirOfRuntimePath does so)
+"|     returns either [[filename, linenr]]
+"|     or [filename]. in case that function does not exist
+"|     (than you can jump to the file and add it manually)
+function! vim_dev_plugin#GetFuncLocation()
+  let addNonExisting = 1
+  if expand('%:e') != 'vim' | return  [] | endif
+  let [b,a] = s:SplitCurrentLineAtCursor()
+  let func = matchstr(b,'\zs[#_a-zA-Z0-9]*\ze$').matchstr(a,'^\zs[_#a-zA-Z0-9]*\ze')
+  let results = []
+  let autofile_list = vim_dev_plugin#ListOfAutoloadFiles()
+  let keys = keys(autofile_list)
+  for [k, file]  in items(autofile_list)
+    if file !~ 'vim_dev_plugin.vim'
+      continue
+    endif
+
+    let file_info = cached_file_contents#CachedFileContents(file,
+            \ s:c['vim_scan_func'], 0)
+    let functions ={}
+    call extend(functions, file_info['declared autoload functions'])
+    call extend(functions, file_info['declared functions'])
+    if has_key(functions, func)
+      let line = functions[func]
+	call add(results, {'filename': file, 'line_nr': line})
+    endif
+    unlet k
+    unlet file
+  endfor
+  if len(results) == 0
+    let file = substitute(func,'#[^#]*$','','') 
+    if has_key(autofile_list, file)
+      return [autofile_list[file]]
+    endif
+  endif
+  if addNonExisting
+    call extend(results, 
+      \ map(split(&runtimepath,','),
+           \ 'v:val.'.string("/autload/".substitute(func,'#','/','g'))))
+  endif
+  return results
+endfunction
+
 " vim:fdm=marker

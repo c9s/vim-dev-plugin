@@ -49,6 +49,12 @@ SCREENSHOT
 ![](http://cloud.github.com/downloads/c9s/vimomni.vim/Screen_shot_2010-01-10_at_10.44.45_AM.png)
 ![](http://cloud.github.com/downloads/c9s/vimomni.vim/Screen_shot_2010-01-10_at_10.44.30_AM.png)
 
+GOTO function
+============
+vim-addon-goto-thing-at-cursor remaps gf. By typing gf on a function Vim will
+attempt to jump to its definition. This implementation is not using tags - so
+its always up to date.
+
 
 CUSTOMIZATION:
 ===============
