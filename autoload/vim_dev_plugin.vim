@@ -6,7 +6,7 @@
 " Email:   cornelius.howl@gmail.com
 
 if !exists('g:vim_dev') | let g:vim_dev = {} | endif | let s:c = g:vim_dev 
-let s:c['vim_scan_func'] = get(s:c, 'vim_scan_func', {'func' : funcref#Function('vim_dev_plugin#ScanFunc'), 'version': 1, 'use_file_cache':1} )
+let s:c['vim_scan_func'] = get(s:c, 'vim_scan_func', {'func' : funcref#Function('vim_dev_plugin#ScanFunc'), 'version': 9, 'use_file_cache':1} )
 
 let s:debug = 0
 
@@ -395,6 +395,10 @@ fun! GetCache(key)
   endif
 endf
 
+fun! s:Matches(s)
+  return a:s =~ s:base || ( s:additional_regex != "" && a:s =~ s:additional_regex)
+endf
+
 fun! SetCache(key,val)
   let g:__cache_{a:key} = a:val
 endf"}}}
@@ -402,9 +406,16 @@ fun! vim_dev_plugin#VimOmniComplete(findstart, base) "{{{
   if a:findstart
     let start = col('.') - 1
     let line = getline('.')
-    while start > 0 && line[start - 1] =~ '[a-zA-Z-_:#.]' 
+    while start > 0 && line[start - 1] =~ '[a-zA-Z-_#.]' 
       let start -= 1
     endwhile
+
+    " b: g: s: prefix?
+    let b:prefix_completion =
+          \ (start > 2 && line[start-1] == ':')
+            \ ? line[start-2]
+            \ : ""
+
     let b:context = strpart( getline('.') , 0 , start + 1 )
     let b:tokens  = split(b:context,'\s\+')
 
@@ -413,22 +424,47 @@ fun! vim_dev_plugin#VimOmniComplete(findstart, base) "{{{
     endif
 
     return start
-  else
-    let b:g_prefix = a:base =~ '^g:'
 
-    if a:base =~ '^a:'
+    " for b: g: s: completion base starts after ':' !
+
+  else
+
+    let b:scanned_buf = vim_dev_plugin#ScanFuncLines(getline(1, line('$')), 'current file')
+
+    let b:g_prefix = b:prefix_completion == 'g'
+
+    let patterns = vim_addon_completion#AdditionalCompletionMatchPatterns(a:base
+          \ , "vim_dev_plugin_completion_func", {'match_beginning_of_string': 0})
+    " binding to local var so that I don't have to pass them again and again
+    " See s:Matches
+    let s:additional_regex = get(patterns, 'vim_regex', "")
+    let s:base = a:base
+
+    " a: completion
+    if b:prefix_completion == 'a'
       call vim_dev_plugin#ACompletion()
       return []
     endif
 
-    if a:base =~ '^s:'
+    " s:completion
+    if b:prefix_completion == 's'
       call vim_dev_plugin#SCompletion()
       return []
     endif
 
-    let patterns = vim_addon_completion#AdditionalCompletionMatchPatterns(a:base
-          \ , "vim_dev_plugin_completion_func", {'match_beginning_of_string': 0})
-    let additional_regex = get(patterns, 'vim_regex', "")
+    " b:completion
+    if b:prefix_completion == 'b'
+      call vim_dev_plugin#BCompletion()
+      return []
+    endif
+
+    " g:completion
+    if b:prefix_completion == 'g'
+      call vim_dev_plugin#GCompletion()
+      " use return? does the code below add more g: items?
+      " also add dynamic g: vars?
+      " TODO
+    endif
 
     let comps = [ ]
     let lines = getline(1,'$')
@@ -524,7 +560,7 @@ fun! vim_dev_plugin#VimOmniComplete(findstart, base) "{{{
       cal extend(comps,s:RuntimeComList())
     endif
 
-    let v_val_filter = "v:val =~ ".string('^\%(.*#\)\?'.a:base).' '.( additional_regex == "" ? "" : '|| v:val =~ '.string('^\%(.*#\)\?'.additional_regex)  )
+    let v_val_filter = "v:val =~ ".string('^\%(.*#\)\?'.a:base).' '.( s:additional_regex == "" ? "" : '|| v:val =~ '.string('^\%(.*#\)\?'.s:additional_regex)  )
     cal filter(comps, v_val_filter )
     cal sort(comps)
 
@@ -532,18 +568,24 @@ fun! vim_dev_plugin#VimOmniComplete(findstart, base) "{{{
       call complete_add(c)
     endfor
 
-    if !b:g_prefix
+    if b:prefix_completion == ""
+      call vim_dev_plugin#CompleteFunLocalLets()
+
       " scanning Vim files the first time will take time..
       " take functions from autoload directories
       let autoload_functions = vim_dev_plugin#ListOfAutoloadFiles()
-      for file  in values(autoload_functions)
+      for file in values(autoload_functions)
         if complete_check() | return [] | endif
-        let file_content = cached_file_contents#CachedFileContents(file,
-              \ s:c['vim_scan_func'], 0)
+        if expand(file) == expand('%:p')
+          let file_content = b:scanned_buf
+        else
+          let file_content = cached_file_contents#CachedFileContents(file,
+                \ s:c['vim_scan_func'], 0)
+        endif
         let functions = keys(file_content['declared autoload functions'])
         cal filter(functions, v_val_filter )
         for f in functions
-          call complete_add(f)
+          call complete_add(f.'(')
         endfor
       endfor
     endif
@@ -630,7 +672,12 @@ let s:vl_regex['function']='^\s*fun\%(ction\)\=!\=\s\+'
 let s:vl_regex['fn_decl']=s:vl_regex['function'].'\zs'.s:vl_regex['fp'].s:vl_regex['uFn'].'\ze('
 
 fun! vim_dev_plugin#ScanFunc(filename)
-  let lines = readfile(a:filename)
+  return vim_dev_plugin#ScanFuncLines(readfile(a:filename), a:filename)
+endf
+
+" scan a vim file returning list of defined functions
+fun! vim_dev_plugin#ScanFuncLines(lines, filename)
+  let lines = a:lines
 
   let declared_functions = vim_dev_plugin#GetAllDeclaredFunctions(
 				      \ lines)
@@ -641,13 +688,76 @@ fun! vim_dev_plugin#ScanFunc(filename)
   let used_autoload_functions = filter(deepcopy(used_user_functions),
 	      \ 'v:key =~ '.string(s:vl_regex['fap'].s:vl_regex['uFn']))
   let g:c = s:vl_regex['fap'].s:vl_regex['uFn']
+
+  let vars_g = []
+  let vars_b = []
+  let vars_s = []
+
+  let n = 1
+  let in_fun = 0
+  for l in lines
+    if l =~ '^\s*fun'
+      let in_fun = 1
+    elseif l =~ '^\s*endf\s*$' || '^\sendfu'
+      let in_fun = 0
+    endif
+    for i in split(l,'let\s\+\ze\%([sgb]:\)')[1:]
+      let p = ''
+      if len(i) > 2 && i[1] == ':'
+        let p = i[0]
+        let i=i[2:]
+      endif
+      let n = matchstr(i,'\zs[^=[\]()\n \t]*')
+
+      if p == "" && !in_fun
+        call add(vars_g, { 'word': n, 'menu': 'g: '.i[len(n):70], 'line': n })
+      elseif p != ""
+        call add(vars_{p}, { 'word': n, 'menu': p.': '.i[len(n):70], 'line': n })
+      endif
+
+    endfor
+    let n = n+1
+  endfor
+
+  if type(declared_autoload_functions) != type({})
+    throw filename
+  endif
+
   return { 'declared functions' : declared_functions
        \ , 'declared autoload functions' : declared_autoload_functions
        \ , 'used autoload functions' : used_autoload_functions
        \ , 'used user functions' : used_user_functions
+      \ , 'vars_g' : vars_g
+      \ , 'vars_b' : vars_b
+      \ , 'vars_s' : vars_s
        \ }
-
 endf
+
+
+
+" complete a: (arg names)
+fun! vim_dev_plugin#CompleteFunLocalLets()
+  let lidx = line('.')
+  let r = []
+  while lidx > 0
+    let l = getline(lidx)
+    if l =~ '^\s*fun'
+      for x in r | call complete_add(x) | endfor
+      return
+    endif
+    if l =~ '^\s*endf\s*$' || '^\sendfu'
+      " not in func
+      return
+    endif
+    for name in split(l,'let\s\+\ze\S')[1:]
+      if len(name) > 2 && name[1] == ':' | continue | endif
+      let n = matchstr(name,'\zs[^=[\]()\n \t]*')
+      call add(r, {'word': n, 'menu': 'local let in func'})
+    endfor
+    let lidx = lidx -1
+  endwhile
+endf
+
 
 " complete a: (arg names)
 fun! vim_dev_plugin#ACompletion()
@@ -657,14 +767,16 @@ fun! vim_dev_plugin#ACompletion()
     let nr = 1
     for arg in split(matchstr(getline(line), '(\zs[^)]*'),'\s*,\s*')
       if arg == '...'
+        if !s:Matches('000') | continue | endif
         " a:0 a:1 etc are not worth adding. They are too short
         call complete_add({
-              \ 'word': 'a:000',
+              \ 'word': '000',
               \ 'menu': ' func arg nr: '.nr
               \ })
       else
+        if !s:Matches('a:'.arg) | continue | endif
         call complete_add({
-              \'word': 'a:'.arg,
+              \'word': arg,
               \'menu': ' func arg nr: '.nr
               \})
       endif
@@ -673,16 +785,46 @@ fun! vim_dev_plugin#ACompletion()
   endif
 endf
 
-" complete s: (buffer scope names)
+" complete s: (buffer scope names and functions)
 fun! vim_dev_plugin#SCompletion()
-  for i in split(join(getline(1, line('$')),"\n"),'let\s\+s:')[1:]
-    let n = matchstr(i,'\zs[^=[\]()\n \t]*')
-    call complete_add({
-          \'word': 's:'.n,
-          \'menu': i[len(n):70]
-          \})
+  " let s: bindings
+  for i in b:scanned_buf['vars_s']
+    if !s:Matches(i.word) | continue | endif
+    call complete_add(i)
+  endfor
+  " fun s:.. functions
+  let scanned = b:scanned_buf
+  for [n,line] in items(scanned['declared functions'])
+    if n =~ '^s:'
+      if !s:Matches(n) | continue | endif
+      call complete_add({
+            \'word': n[2:].'(',
+            \'menu': ' func this buf line '. line
+            \})
+      unlet n line
+    endif
   endfor
 endf
+
+" complete s: (buffer scope names and functions)
+" yes, this only finds b: definitions in the current buffer (FIXME)
+" Ideally parse all ftpluginfiles etc
+fun! vim_dev_plugin#BCompletion()
+  " let s: bindings
+  for i in b:scanned_buf['vars_b']
+    if !s:Matches(i.word) | continue | endif
+    call complete_add(i)
+  endfor
+endf
+
+fun! vim_dev_plugin#GCompletion()
+  " let s: bindings
+  for i in b:scanned_buf['vars_g']
+    if !s:Matches(i.word) | continue | endif
+    call complete_add(i)
+  endfor
+endf
+
 
 " returns dictionary { "<functionname>" : <line_nr> , ... }
 function! vim_dev_plugin#GetAllDeclaredFunctions(file_as_string_list)
