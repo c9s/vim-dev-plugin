@@ -655,7 +655,7 @@ fun! vim_dev_plugin#ACompletion()
   if line > 0
     let l = getline(line)
     let nr = 1
-    for arg in split(matchstr(getline(line), '(\zs[^)]*'),"\s,\s")
+    for arg in split(matchstr(getline(line), '(\zs[^)]*'),'\s*,\s*')
       if arg == '...'
         " a:0 a:1 etc are not worth adding. They are too short
         call complete_add({
