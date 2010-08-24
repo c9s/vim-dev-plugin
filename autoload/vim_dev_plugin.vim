@@ -458,6 +458,11 @@ fun! vim_dev_plugin#VimOmniComplete(findstart, base) "{{{
       return []
     endif
 
+    if b:prefix_completion == ""
+      " this is fast, so add these completions early
+      call vim_dev_plugin#CompleteFunLocalLets()
+    endif
+
     " g:completion
     if b:prefix_completion == 'g'
       call vim_dev_plugin#GCompletion()
@@ -569,7 +574,6 @@ fun! vim_dev_plugin#VimOmniComplete(findstart, base) "{{{
     endfor
 
     if b:prefix_completion == ""
-      call vim_dev_plugin#CompleteFunLocalLets()
 
       " scanning Vim files the first time will take time..
       " take functions from autoload directories
@@ -904,37 +908,12 @@ endfunction
 "|     returns either [[filename, linenr]]
 "|     or [filename]. in case that function does not exist
 "|     (than you can jump to the file and add it manually)
-function! vim_dev_plugin#GetFuncLocation()
+function! vim_dev_plugin#GetFuncLocation(...)
   let addNonExisting = 1
   if expand('%:e') != 'vim' | return  [] | endif
   let [b,a] = s:SplitCurrentLineAtCursor()
   let func = matchstr(b,'\zs[#_a-zA-Z0-9]*\ze$').matchstr(a,'^\zs[_#a-zA-Z0-9]*\ze')
-  let results = []
-  let autofile_list = vim_dev_plugin#ListOfAutoloadFiles()
-  let keys = keys(autofile_list)
-  for [k, file]  in items(autofile_list)
-    if file !~ 'vim_dev_plugin.vim'
-      continue
-    endif
-
-    let file_info = cached_file_contents#CachedFileContents(file,
-            \ s:c['vim_scan_func'], 0)
-    let functions ={}
-    call extend(functions, file_info['declared autoload functions'])
-    call extend(functions, file_info['declared functions'])
-    if has_key(functions, func)
-      let line = functions[func]
-	call add(results, {'filename': file, 'line_nr': line})
-    endif
-    unlet k
-    unlet file
-  endfor
-  if len(results) == 0
-    let file = substitute(func,'#[^#]*$','','') 
-    if has_key(autofile_list, file)
-      return [autofile_list[file]]
-    endif
-  endif
+  let results = vim_dev_plugin#FindFunction(func)
   if addNonExisting
     call extend(results, 
       \ map(split(&runtimepath,','),
@@ -943,4 +922,60 @@ function! vim_dev_plugin#GetFuncLocation()
   return results
 endfunction
 
+fun! vim_dev_plugin#FindFunction(func)
+  let results = []
+  let autofile_list = vim_dev_plugin#ListOfAutoloadFiles()
+  let keys = keys(autofile_list)
+  for [k, file]  in items(autofile_list)
+
+    let file_info = cached_file_contents#CachedFileContents(file,
+            \ s:c['vim_scan_func'], 0)
+    let functions ={}
+    call extend(functions, file_info['declared autoload functions'])
+    call extend(functions, file_info['declared functions'])
+    if has_key(functions, a:func)
+      let line = functions[a:func]
+	call add(results, {'filename': file, 'line_nr': line})
+    endif
+    unlet k
+    unlet file
+  endfor
+  if len(results) == 0
+    let file = substitute(a:func,'#[^#]*$','','') 
+    if has_key(autofile_list, file)
+      return [autofile_list[file]]
+    endif
+  endif
+  return results
+endf
+
+
+" jumps to this kind of error location:
+" Error detected while processing function vim_dev_plugin#FindFunction:
+" line   24: 
+" see :messages
+
+" TODO even put trace in quickfix ?
+fun! vim_dev_plugin#VimLGotoLastError()
+  let lines = tlib#cmd#OutputAsList('messages')
+  let match_trace = '^Error detected while processing function \zs.*\ze:$'
+  for l in range(len(lines)-1, 0, -1)
+    let trace = matchstr(lines[l], match_trace)
+    if trace != ""
+      let locations = split(trace,'\.\.')
+      let line_offset = matchstr(lines[l+1], '^line\s*\zs\d\+\ze:$')
+      let fun_locations = vim_dev_plugin#FindFunction(locations[-1])
+      if len(fun_locations) == 0
+        echo "no locations found for error line ".lines[l]
+        break
+      endif
+      let location = eval(tlib#input#List("s","multiple locations found", map(fun_locations, 'string(v:val)') ))
+      exec 'e '.fnameescape(location.filename)
+      exec (location.line_nr+line_offset)
+      " is this a good idea? use u to unde this change
+      exec 'normal o ERROR was:!'.lines[l+2].' ( remove this line by u(ndo) )'
+      break
+    endif
+  endfor
+endf
 " vim:fdm=marker
