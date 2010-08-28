@@ -957,13 +957,23 @@ endf
 
 " TODO even put trace in quickfix ?
 fun! vim_dev_plugin#VimLGotoLastError()
+
   let lines = tlib#cmd#OutputAsList('messages')
+
+  " get line number from previous line which looks like 'line: 17'
+  let get_line = 'let line_offset = matchstr(lines[l+1], '.string('^line\s*\zs\d\+\ze:$').')'
+
+  " put error in the line below assuming the error message was in line +2
+  let put_error = "exec 'normal o ERROR was:!'.lines[l+2].' ( remove this line by u(ndo) )'"
+
   let match_trace = '^Error detected while processing function \zs.*\ze:$'
+  let match_processing_error = '^Error detected while processing \zs.*\ze:'
+
   for l in range(len(lines)-1, 0, -1)
     let trace = matchstr(lines[l], match_trace)
     if trace != ""
       let locations = split(trace,'\.\.')
-      let line_offset = matchstr(lines[l+1], '^line\s*\zs\d\+\ze:$')
+      exec get_line
       let fun_locations = vim_dev_plugin#FindFunction(locations[-1])
       if len(fun_locations) == 0
         echo "no locations found for error line ".lines[l]
@@ -973,7 +983,16 @@ fun! vim_dev_plugin#VimLGotoLastError()
       exec 'e '.fnameescape(location.filename)
       exec (location.line_nr+line_offset)
       " is this a good idea? use u to unde this change
-      exec 'normal o ERROR was:!'.lines[l+2].' ( remove this line by u(ndo) )'
+      exec put_error
+      break
+    endif
+
+    let file = matchstr(lines[l], match_processing_error)
+    if file != ""
+      exec get_line
+      exec 'e '.fnameescape(file)
+      exec line_offset
+      exec put_error
       break
     endif
   endfor
