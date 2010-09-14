@@ -11,45 +11,45 @@ let s:c['vim_scan_func'] = get(s:c, 'vim_scan_func', {'func' : funcref#Function(
 let s:debug = 0
 
 " builtin function {{{
-let s:builtin_function_list =  [
-    \"abs(", "add(", "append(", "argc(", "argidx(",
-    \"argv(", "atan(", "browse(", "browsedir(", "bufexists(", "buflisted(", "bufloaded(",
-    \"bufname(", "bufnr(", "bufwinnr(", "byte2line(", "byteidx(", "call(", "ceil(",
-    \"changenr(", "char2nr(", "cindent(", "clearmatches(", "col(", "complete(",
-    \"complete_add(", "complete_check(", "confirm(", "copy(", "cos(", "count(",
-    \"cscope_connection(", "cursor(", "deepcopy(", "delete(", "did_filetype(",
-    \"diff_filler(", "diff_hlID(", "empty(", "escape(", "eval(", "eventhandler(",
-    \"executable(", "exists(", "expand(", "extend(", "feedkeys(", "filereadable(",
-    \"filewritable(", "filter(", "finddir(", "findfile(", "float2nr(", "floor(",
-    \"fnameescape(", "fnamemodify(", "foldclosed(", "foldclosedend(", "foldlevel(",
-    \"foldtext(", "foldtextresult(", "foreground(", "function(", "garbagecollect(",
-    \"get(", "getbufline(", "getbufvar(", "getchar(", "getcharmod(", "getcmdline(",
-    \"getcmdpos(", "getcmdtype(", "getcwd(", "getfontname(", "getfperm(", "getfsize(",
-    \"getftime(", "getftype(", "getline(", "getloclist(", "getmatches(", "getpid(",
-    \"getpos(", "getqflist(", "getreg(", "getregtype(", "gettabwinvar(", "getwinposx(",
-    \"getwinposy(", "getwinvar(", "glob(", "globpath(", "has(", "has_key(",
-    \"haslocaldir(", "hasmapto(", "histadd(", "histdel(", "histget(", "histnr(", "hlID(",
-    \"hlexists(", "hostname(", "iconv(", "indent(", "index(", "input(", "inputdialog(",
-    \"inputlist(", "inputrestore(", "inputsave(", "inputsecret(", "insert(",
-    \"isdirectory(", "islocked(", "items(", "join(", "keys(", "len(", "libcall(",
-    \"libcallnr(", "line(", "line2byte(", "lispindent(", "localtime(", "log10(", "map(",
-    \"maparg(", "mapcheck(", "match(", "matchadd(", "matcharg(", "matchdelete(",
-    \"matchend(", "matchlist(", "matchstr(", "max(", "min(", "mkdir(", "mode(",
-    \"nextnonblank(", "nr2char(", "pathshorten(", "pow(", "prevnonblank(", "printf(",
-    \"pumvisible(", "range(", "readfile(", "reltime(", "reltimestr(", "remote_expr(",
-    \"remote_foreground(", "remote_peek(", "remote_read(", "remote_send(", "remove(",
-    \"rename(", "repeat(", "resolve(", "reverse(", "round(", "search(", "searchdecl(",
-    \"searchpair(", "searchpairpos(", "searchpos(", "server2client(", "serverlist(",
-    \"setbufvar(", "setcmdpos(", "setline(", "setloclist(", "setmatches(", "setpos(",
-    \"setqflist(", "setreg(", "settabwinvar(", "setwinvar(", "shellescape(", "simplify(",
-    \"sin(", "sort(", "soundfold(", "spellbadword(", "spellsuggest(", "split(", "sqrt(",
-    \"str2float(", "str2nr(", "strftime(", "stridx(", "string(", "strlen(", "strpart(",
-    \"strridx(", "strtrans(", "submatch(", "substitute(", "synID(", "synIDattr(",
-    \"synIDtrans(", "synstack(", "system(", "tabpagebuflist(", "tabpagenr(",
-    \"tabpagewinnr(", "tagfiles(", "taglist(", "tempname(", "tolower(", "toupper(", "tr(",
-    \"trunc(", "type(", "values(", "virtcol(", "visualmode(", "winbufnr(", "wincol(",
-    \"winheight(", "winline(", "winnr(", "winrestcmd(", "winrestview(", "winsaveview(",
-    \"winwidth(", "writefile("]"}}}
+" let s:builtin_function_list =  [
+"     \"abs(", "add(", "append(", "argc(", "argidx(",
+"     \"argv(", "atan(", "browse(", "browsedir(", "bufexists(", "buflisted(", "bufloaded(",
+"     \"bufname(", "bufnr(", "bufwinnr(", "byte2line(", "byteidx(", "call(", "ceil(",
+"     \"changenr(", "char2nr(", "cindent(", "clearmatches(", "col(", "complete(",
+"     \"complete_add(", "complete_check(", "confirm(", "copy(", "cos(", "count(",
+"     \"cscope_connection(", "cursor(", "deepcopy(", "delete(", "did_filetype(",
+"     \"diff_filler(", "diff_hlID(", "empty(", "escape(", "eval(", "eventhandler(",
+"     \"executable(", "exists(", "expand(", "extend(", "feedkeys(", "filereadable(",
+"     \"filewritable(", "filter(", "finddir(", "findfile(", "float2nr(", "floor(",
+"     \"fnameescape(", "fnamemodify(", "foldclosed(", "foldclosedend(", "foldlevel(",
+"     \"foldtext(", "foldtextresult(", "foreground(", "function(", "garbagecollect(",
+"     \"get(", "getbufline(", "getbufvar(", "getchar(", "getcharmod(", "getcmdline(",
+"     \"getcmdpos(", "getcmdtype(", "getcwd(", "getfontname(", "getfperm(", "getfsize(",
+"     \"getftime(", "getftype(", "getline(", "getloclist(", "getmatches(", "getpid(",
+"     \"getpos(", "getqflist(", "getreg(", "getregtype(", "gettabwinvar(", "getwinposx(",
+"     \"getwinposy(", "getwinvar(", "glob(", "globpath(", "has(", "has_key(",
+"     \"haslocaldir(", "hasmapto(", "histadd(", "histdel(", "histget(", "histnr(", "hlID(",
+"     \"hlexists(", "hostname(", "iconv(", "indent(", "index(", "input(", "inputdialog(",
+"     \"inputlist(", "inputrestore(", "inputsave(", "inputsecret(", "insert(",
+"     \"isdirectory(", "islocked(", "items(", "join(", "keys(", "len(", "libcall(",
+"     \"libcallnr(", "line(", "line2byte(", "lispindent(", "localtime(", "log10(", "map(",
+"     \"maparg(", "mapcheck(", "match(", "matchadd(", "matcharg(", "matchdelete(",
+"     \"matchend(", "matchlist(", "matchstr(", "max(", "min(", "mkdir(", "mode(",
+"     \"nextnonblank(", "nr2char(", "pathshorten(", "pow(", "prevnonblank(", "printf(",
+"     \"pumvisible(", "range(", "readfile(", "reltime(", "reltimestr(", "remote_expr(",
+"     \"remote_foreground(", "remote_peek(", "remote_read(", "remote_send(", "remove(",
+"     \"rename(", "repeat(", "resolve(", "reverse(", "round(", "search(", "searchdecl(",
+"     \"searchpair(", "searchpairpos(", "searchpos(", "server2client(", "serverlist(",
+"     \"setbufvar(", "setcmdpos(", "setline(", "setloclist(", "setmatches(", "setpos(",
+"     \"setqflist(", "setreg(", "settabwinvar(", "setwinvar(", "shellescape(", "simplify(",
+"     \"sin(", "sort(", "soundfold(", "spellbadword(", "spellsuggest(", "split(", "sqrt(",
+"     \"str2float(", "str2nr(", "strftime(", "stridx(", "string(", "strlen(", "strpart(",
+"     \"strridx(", "strtrans(", "submatch(", "substitute(", "synID(", "synIDattr(",
+"     \"synIDtrans(", "synstack(", "system(", "tabpagebuflist(", "tabpagenr(",
+"     \"tabpagewinnr(", "tagfiles(", "taglist(", "tempname(", "tolower(", "toupper(", "tr(",
+"     \"trunc(", "type(", "values(", "virtcol(", "visualmode(", "winbufnr(", "wincol(",
+"     \"winheight(", "winline(", "winnr(", "winrestcmd(", "winrestview(", "winsaveview(",
+"     \"winwidth(", "writefile("]"}}}
 " builtin commands {{{
 let s:builtin_command_list = [
       \"abclear", "argdo", "argument", "belowright",
@@ -509,7 +509,8 @@ fun! vim_dev_plugin#VimOmniComplete(findstart, base) "{{{
       endif
 
       if t =~ 'call\?'
-        cal extend(comps,s:builtin_function_list)
+        " cal extend(comps,s:builtin_function_list)
+        call s:CompleteBuiltinFunctions()
         cal extend(comps,f_comps)
         cal extend(comps,s:RuntimeFunList())
       elseif first =~ '[nvic]\?map$'
@@ -523,7 +524,8 @@ fun! vim_dev_plugin#VimOmniComplete(findstart, base) "{{{
         endif
       " command completion
       elseif first =~ 'com\%[mand]!\?' && t =~ '-complete=custom\(list\)\?,$'
-        cal extend(comps,s:builtin_function_list)
+        " cal extend(comps,s:builtin_function_list)
+        call s:CompleteBuiltinFunctions()
         cal extend(comps,f_comps)
         cal extend(comps,s:RuntimeFunList())
         " little patch for command completion function name
@@ -541,7 +543,8 @@ fun! vim_dev_plugin#VimOmniComplete(findstart, base) "{{{
       elseif t =~ '[=+-/*]' || t =~ '\w\+($' || t =~ '^\(if\|else\|elseif\|while\|for\|in\)'
         cal extend(comps,v_comps)
         cal extend(comps,s:RuntimeVarList())
-        cal extend(comps,s:builtin_function_list)
+        "cal extend(comps,s:builtin_function_list)
+        call s:CompleteBuiltinFunctions()
         cal extend(comps,f_comps)
         cal extend(comps,s:RuntimeFunList())
       " option context
@@ -553,7 +556,8 @@ fun! vim_dev_plugin#VimOmniComplete(findstart, base) "{{{
         cal extend(comps,s:RuntimeVarList())
       else
         cal extend(comps,f_comps)
-        cal extend(comps,s:builtin_function_list)
+        "cal extend(comps,s:builtin_function_list)
+        call s:CompleteBuiltinFunctions()
         cal extend(comps,s:RuntimeFunList())
 
         cal extend(comps,s:builtin_command_list)
@@ -662,6 +666,31 @@ fun! s:AutoloadPrefixes(funcs) "{{{
   endfor
   return keys(heads)
 endf "}}}
+
+fun! s:CompleteBuiltinFunctions()
+  let func_lines = []
+  let lines = readfile($VIMRUNTIME.'/doc/eval.txt')
+  for idx in range(0, len(lines)-1)
+    if lines[idx][:11] == "abs( {expr})"
+      let start = idx
+      " at abs\t  all function names are repeated a second time, this time
+      " with a long description. stop here
+    elseif lines[idx][:11] == "abs({expr})\t"
+      let stop = idx
+      break
+    endif
+  endfor
+
+  let func = ""
+  for idx in range(stop,start,-1)
+    let func = substitute(lines[idx],'[ \t]\+',' ','g')." ".func
+    let matches = matchlist(func, '^\([^( \t]\+\)(\([^)]*\))\(.*\)')
+    if len(matches) > 0 && s:Matches(matches[1])
+      cal complete_add({'word': matches[1].'(', 'menu': '('.matches[2].') ' .matches[3]})
+      let func = ""
+    endif
+  endfor
+endfun
 
 " scan func - simple .vim file parser It can collect used and defined autoload functions "{{{1
 
