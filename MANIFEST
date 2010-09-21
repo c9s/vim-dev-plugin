@@ -1,0 +1,8 @@
+ftplugin/vim/omni.vim
+Makefile
+MANIFEST
+MANIFEST.SKIP
+META
+README.md
+test.vim
+VIMMETA.yml
