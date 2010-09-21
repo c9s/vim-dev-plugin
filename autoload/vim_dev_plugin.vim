@@ -6,7 +6,7 @@
 " Email:   cornelius.howl@gmail.com
 
 if !exists('g:vim_dev') | let g:vim_dev = {} | endif | let s:c = g:vim_dev 
-let s:c['vim_scan_func'] = get(s:c, 'vim_scan_func', {'func' : funcref#Function('vim_dev_plugin#ScanFunc'), 'version': 9, 'use_file_cache':1} )
+let s:c['vim_scan_func'] = get(s:c, 'vim_scan_func', {'func' : funcref#Function('vim_dev_plugin#ScanFunc'), 'version': 10, 'use_file_cache':1} )
 
 let s:debug = 0
 
@@ -590,10 +590,11 @@ fun! vim_dev_plugin#VimOmniComplete(findstart, base) "{{{
           let file_content = cached_file_contents#CachedFileContents(file,
                 \ s:c['vim_scan_func'], 0)
         endif
-        let functions = keys(file_content['declared autoload functions'])
-        cal filter(functions, v_val_filter )
-        for f in functions
-          call complete_add(f.'(')
+        let functions = file_content['declared autoload functions']
+        cal filter(functions, substitute(v_val_filter,'v:val','v:key','g') )
+        for [k,v] in items(functions)
+          call complete_add({'word': k.'(', 'menu': v.args, 'info': v.args})
+          unlet k v
         endfor
       endfor
     endif
@@ -633,24 +634,46 @@ fun! s:RuntimeVarList() "{{{
   cal SetCache('vim_runtime_var' . b:g_prefix ,list)
   return list
 endf"}}}
+
 fun! s:RuntimeFunList() "{{{
+  " this func completes global functions only
+  " see continue below
+
   let c = GetCache('vim_runtime_fun' . b:g_prefix)
-  if type(c) == 3
-    return c
+  if type(c) != type({})
+    " build cache
+
+    redir => flist
+    silent! fun
+    redir END
+    unlet c
+    let c = {}
+    for l in split(flist,"\n")
+      if l =~ '#\|SNR'
+        " - s: functions are skipped because we only want s: functions of the
+        "   current file to appear
+        " - autoload functions (containing #) are skipped cause they are
+        "   completed by scan func result
+        continue
+      endif
+      " get name and args:
+      let li = matchlist(l,'\([A-Za-z_]\+\)(\([^)]*\)')
+      if len(li) > 0 && li[1] != ""
+        let c[li[1]] = li[2]
+      endif
+    endfor
+    cal SetCache('vim_runtime_fun' . b:g_prefix,c)
   endif
 
-  redir => flist
-  silent! fun
-  redir END
-  let list = split(flist,"\n")
-  cal map(list,'substitute(v:val,''^function\s\([a-zA-Z0-9_<>#:]\+\).*'',''\1('',"")')
-  cal map(list,'substitute(v:val,''^\(<SNR>\d\+_\)'',''s:'',"")')
-  if b:g_prefix 
-    cal map(list,'substitute(v:val,''^\([A-Z]\)'',''g:\1'',"")')
-  endif
-  cal extend(list,s:AutoloadPrefixes(list))
-  cal SetCache('vim_runtime_fun' . b:g_prefix,list)
-  return list
+  for [k,v] in items(c)
+    if s:Matches(k)
+      call complete_add({'word': k.'(', 'menu': v, 'info': v})
+    endif
+    unlet k v
+  endfor
+
+  " old interface is no longer used here:
+  return []
 endf "}}}
 fun! s:AutoloadPrefixes(funcs) "{{{
   let funcs = filter(copy(a:funcs),'v:val =~ ''\w\+#''')
@@ -827,14 +850,17 @@ fun! vim_dev_plugin#SCompletion()
   endfor
   " fun s:.. functions
   let scanned = b:scanned_buf
-  for [n,line] in items(scanned['declared functions'])
+  for [n,value] in items(scanned['declared functions'])
+    let line = value.line
     if n =~ '^s:'
       if !s:Matches(n) | continue | endif
+      let info = ( has_key(value,'args') ? value.args : '').' func this buf line '. line
       call complete_add({
             \'word': n[2:].'(',
-            \'menu': ' func this buf line '. line
+            \'menu': info,
+            \'info': info 
             \})
-      unlet n line
+      unlet n value line
     endif
   endfor
 endf
@@ -866,7 +892,7 @@ function! vim_dev_plugin#GetAllDeclaredFunctions(file_as_string_list)
   for l in a:file_as_string_list
     let function = matchstr(l,s:vl_regex['fn_decl'])
       if function !=  ""
-	let functions[function] = line_nr
+	let functions[function] = { 'line': line_nr, 'args': matchstr(l, '(\zs[^)]*') }
       endif
     let line_nr = line_nr + 1
   endfor
@@ -963,7 +989,7 @@ fun! vim_dev_plugin#FindFunction(func)
     call extend(functions, file_info['declared autoload functions'])
     call extend(functions, file_info['declared functions'])
     if has_key(functions, a:func)
-      let line = functions[a:func]
+      let line = functions[a:func]['line']
 	call add(results, {'filename': file, 'line_nr': line})
     endif
     unlet k
