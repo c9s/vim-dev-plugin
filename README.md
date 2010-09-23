@@ -64,3 +64,8 @@ its always up to date.
 CUSTOMIZATION:
 ===============
 If you dislike camel case matching see vim-addon-ocmpletion how to override the default
+
+recommended additional plugins
+==============================
+You may find reload useful which reloads syntax and .vim files.
+You still want to restart Vim to get rid of old definititions etc.
