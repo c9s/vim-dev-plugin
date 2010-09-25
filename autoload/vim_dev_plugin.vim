@@ -965,7 +965,7 @@ endfunction
 "|     (than you can jump to the file and add it manually)
 function! vim_dev_plugin#GetFuncLocation(...)
   let addNonExisting = 1
-  if expand('%:e') != 'vim' | return  [] | endif
+  if &filetype != 'vim' | return  [] | endif
   let [b,a] = s:SplitCurrentLineAtCursor()
   let func = matchstr(b,'\zs[#_a-zA-Z0-9]*\ze$').matchstr(a,'^\zs[_#a-zA-Z0-9]*\ze')
   let results = vim_dev_plugin#FindFunction(func)
