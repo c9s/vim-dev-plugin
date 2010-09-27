@@ -590,7 +590,7 @@ fun! vim_dev_plugin#VimOmniComplete(findstart, base) "{{{
           let file_content = cached_file_contents#CachedFileContents(file,
                 \ s:c['vim_scan_func'], 0)
         endif
-        let functions = file_content['declared autoload functions']
+        let functions = copy(file_content['declared autoload functions'])
         cal filter(functions, substitute(v_val_filter,'v:val','v:key','g') )
         for [k,v] in items(functions)
           call complete_add({'word': k.'(', 'menu': v.args, 'info': v.args})
