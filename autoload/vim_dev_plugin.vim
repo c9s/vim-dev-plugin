@@ -6,7 +6,7 @@
 " Email:   cornelius.howl@gmail.com
 
 if !exists('g:vim_dev') | let g:vim_dev = {} | endif | let s:c = g:vim_dev 
-let s:c['vim_scan_func'] = get(s:c, 'vim_scan_func', {'func' : funcref#Function('vim_dev_plugin#ScanFunc'), 'version': 10, 'use_file_cache':1} )
+let s:c['vim_scan_func'] = get(s:c, 'vim_scan_func', {'func' : funcref#Function('vim_dev_plugin#ScanFunc'), 'version': 11, 'use_file_cache':1} )
 
 let s:debug = 0
 
@@ -757,7 +757,7 @@ fun! vim_dev_plugin#ScanFuncLines(lines, filename)
     elseif l =~ '^\s*endf\s*$' || '^\sendfu'
       let in_fun = 0
     endif
-    for i in split(l,'let\s\+\ze\%([sgb]:\)')[1:]
+    for i in split(l,'let\s\+\ze\%([sgb]:\)',1)[1:]
       let p = ''
       if len(i) > 2 && i[1] == ':'
         let p = i[0]
