@@ -115,6 +115,7 @@ let s:builtin_command_list = [
       \"for" ]
 "}}}
 " options {{{
+" TODO: complete vim_dev_plugin#OptionList() and use its result instead
 let s:builtin_option_list = [
       \"acd", "ambiwidth", "arabicshape",
       \"autowriteall", "backupdir", "bdlay", "binary", "breakat", "bufhidden",
@@ -401,7 +402,8 @@ endf
 
 fun! SetCache(key,val)
   let g:__cache_{a:key} = a:val
-endf"}}}
+endf
+"}}}
 fun! vim_dev_plugin#VimOmniComplete(findstart, base) "{{{
   if a:findstart
     let start = col('.') - 1
@@ -412,9 +414,13 @@ fun! vim_dev_plugin#VimOmniComplete(findstart, base) "{{{
 
     " b: g: s: prefix?
     let b:prefix_completion =
-          \ (start > 2 && line[start-1] == ':')
+          \ (start >= 2 && line[start-1] == ':')
             \ ? line[start-2]
             \ : ""
+
+    if (start >= 1 && line[start -1] == '&')
+      let b:prefix_completion = '&'
+    endif
 
     let b:context = strpart( getline('.') , 0 , start + 1 )
     let b:tokens  = split(b:context,'\s\+')
@@ -455,6 +461,16 @@ fun! vim_dev_plugin#VimOmniComplete(findstart, base) "{{{
     " b:completion
     if b:prefix_completion == 'b'
       call vim_dev_plugin#BCompletion()
+      return []
+    endif
+
+    " &completion
+    if b:prefix_completion == '&'
+      " TODO use vim_dev_plugin#OptionList with description - but its
+      for x in vim_dev_plugin#OptionList()
+        if s:Matches(x.long)  | call complete_add({'word': x.long, 'menu': x.description[0], 'info': x.description}) | endif
+        if s:Matches(x.short) | call complete_add({'word': x.short, 'menu': split(x.description,"\n")[0], 'info': x.description}) | endif
+      endfor
       return []
     endif
 
@@ -600,7 +616,7 @@ fun! vim_dev_plugin#VimOmniComplete(findstart, base) "{{{
     endif
 
   endif
-endf"}}}
+endf "}}}
 fun! s:RuntimeComList() "{{{
   let c = GetCache('vim_runtime_cmd')
   if type(c) == 3
@@ -616,7 +632,7 @@ fun! s:RuntimeComList() "{{{
 
   cal SetCache('vim_runtime_cmd',list)
   return list
-endf"}}}
+endf "}}}
 fun! s:RuntimeVarList() "{{{
   let c = GetCache('vim_runtime_var' . b:g_prefix)
   if type(c) == 3
@@ -633,7 +649,7 @@ fun! s:RuntimeVarList() "{{{
   endif
   cal SetCache('vim_runtime_var' . b:g_prefix ,list)
   return list
-endf"}}}
+endf "}}}
 
 fun! s:RuntimeFunList() "{{{
   " this func completes global functions only
@@ -1052,4 +1068,40 @@ fun! vim_dev_plugin#VimLGotoLastError()
     endif
   endfor
 endf
+
+" get option list from documentation. Is used for &completion
+" TODO take 't_AB' etc into account
+" Is there another way to get a list of all options?
+fun! vim_dev_plugin#OptionList()
+  if !exists('s:option_list')
+    let func_lines = []
+    let lines = readfile($VIMRUNTIME.'/doc/options.txt')
+    let options = []
+    let idx = 0
+    let r = "^'\\([^' ]*\\)'\\s*'\\([^' ]*\\)'\\s*\\(.*\\)"
+    while idx < len(lines)
+      let l = lines[idx]
+      if l =~ r
+        " option found
+        let m = matchlist(l, r)
+        let idx += 1
+        let description = m[3]
+        while lines[idx] =~ '^\t\{1,3}[^\t]*'
+          let description .=  "\n".lines[idx][1:]
+          let idx += 1
+        endwhile
+        call add(options, {'long': m[1], 'short': m[2], 'description': description})
+      else
+        let idx +=1
+      endif
+    endwhile
+
+    let names = map(copy(options), 'v:val.long')
+
+    let s:option_list = options
+  endif
+
+  return s:option_list
+endf
+
 " vim:fdm=marker
