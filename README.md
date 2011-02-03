@@ -18,6 +18,7 @@ vim omni supports:
     * option name completion.
     * autocommand event name completion
     * feature name completion.
+    * &option
 
 
 INSTALL
