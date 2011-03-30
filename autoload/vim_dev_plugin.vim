@@ -821,7 +821,7 @@ fun! vim_dev_plugin#CompleteFunLocalLets()
       " not in func
       return
     endif
-    for name in split(l,'let\s\+\ze\S')[1:]
+    for name in split(l,'\%(let\|for\)\s\+\ze\S')[1:]
       if len(name) > 2 && name[1] == ':' | continue | endif
       let n = matchstr(name,'\zs[^=[\]()\n \t]*')
       call add(r, {'word': n, 'menu': 'local let in func'})
