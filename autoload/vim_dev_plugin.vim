@@ -408,7 +408,7 @@ fun! vim_dev_plugin#VimOmniComplete(findstart, base) "{{{
   if a:findstart
     let start = col('.') - 1
     let line = getline('.')
-    while start > 0 && line[start - 1] =~ '[a-zA-Z-_#.]' 
+    while start > 0 && line[start - 1] =~ '[a-zA-Z-_#.0-9]' 
       let start -= 1
     endwhile
 
