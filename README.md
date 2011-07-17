@@ -70,3 +70,47 @@ recommended additional plugins
 ==============================
 You may find reload useful which reloads syntax and .vim files.
 You still want to restart Vim to get rid of old definititions etc.
+
+How to debug VimL ?
+===================
+use :debug a-command then (c)ontinue (r)eturn (n)ext (s)tep ..
+if you get stackt traces of dict functions you can find the hints about the
+declaration by :function {77} or such.
+
+How to debug all calls of a function F?
+
+change
+fun F()
+  " do something
+endf
+
+to 
+fun F(...)
+  debug return call(function('F2'), a:000)
+endf
+
+fun F2()
+  " do something
+endf
+
+
+Howto write a good Vim plugin ?
+===============================
+Hard question. There are different styles. I like the following:
+
+- Don't start from scratch if you can also join an existing project.
+  So do some research or ask on #vim
+
+- Try reusing code. vim-addon-manager allows to install dependencies easily.
+
+- Consider using a VCS (eg git) so that other devs can join and help you more
+  easily (or continue your project if you lost interest).
+
+- put code which is not run on every startup into autoload/ files
+  Thus the plugin/ files ideally only contain the setup and user interface.
+
+- If you need configurations try binding a global dict the user can set in its
+  .vimrc to a short buffer local var. Set settings if they have not been set by
+  the user. An example can be seen in autoload/vim_dev_plugin.vim which allows
+  the user to overwrite vim_scan_func in his .vimrc in this way:
+  let g:vim_dev = { 'vim_scan_func' : ... }
