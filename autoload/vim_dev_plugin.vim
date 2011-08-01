@@ -946,6 +946,22 @@ fun! vim_dev_plugin#GetPrefix(path)
   return substitute(matchstr(a:path,'.*autoload[/\\]\zs.*\ze\.vim$'),'[/\\]','#','g')
 endf
 
+fun! vim_dev_plugin#GlobRuntimePath(list_rel)
+  let files = []
+  for path in reverse(split(&runtimepath,','))
+    for p in a:list_rel
+      call extend(files, split(glob(expand(path).'/'.p),"\n"))
+    endfor
+  endfor
+  return files
+endf
+
+function! vim_dev_plugin#ListOfNonAutoLoadVimFiles()
+  " ftdetect etc is not that important. (TODO)?
+  return  
+        \ filter([expand('%'), expand("~/.vimrc"), expand("~/_vimrc")], 'filereadable(v:val)')
+        \ + vim_dev_plugin#GlobRuntimePath(['plugin/**/*.vim','syntax/**/*.vim','after/**.*.vim'])
+endf
 
 " returns list of all used autoload files
 " If you have 2 autoload/file.vim files
@@ -955,17 +971,11 @@ endf
 " blah#
 function! vim_dev_plugin#ListOfAutoloadFiles()
   let files = {}
-  for path in reverse(split(&runtimepath,','))
-    for file in split(globpath(expand(path.'/autoload'),"**/*.vim"),"\n")
-      let prefix = vim_dev_plugin#GetPrefix(file)
-      if !has_key(files, prefix)
-        let files[prefix] = file
-      endif
-    endfor
+  for f in vim_dev_plugin#GlobRuntimePath(['autoload/**/*.vim'])
+    let files[vim_dev_plugin#GetPrefix(f)] = f
   endfor
   return files
 endfunction
-
 
 fun! s:SplitCurrentLineAtCursor()
   let pos = col('.') -1
@@ -993,24 +1003,49 @@ function! vim_dev_plugin#GetFuncLocation(...)
   return results
 endfunction
 
-fun! vim_dev_plugin#FindFunction(func)
+fun! vim_dev_plugin#FindFunction(func) abort
   let results = []
-  let autofile_list = vim_dev_plugin#ListOfAutoloadFiles()
-  let keys = keys(autofile_list)
-  for [k, file]  in items(autofile_list)
 
-    let file_info = cached_file_contents#CachedFileContents(file,
-            \ s:c['vim_scan_func'], 0)
-    let functions ={}
-    call extend(functions, file_info['declared autoload functions'])
-    call extend(functions, file_info['declared functions'])
-    if has_key(functions, a:func)
-      let line = functions[a:func]['line']
-	call add(results, {'filename': file, 'line_nr': line})
-    endif
-    unlet k
-    unlet file
-  endfor
+  if a:func =~ '#'
+    " autoload function
+    let autofile_list = vim_dev_plugin#ListOfAutoloadFiles()
+    let keys = keys(autofile_list)
+    let reg_prefix = '^'.substitute(a:func, '\(.*\)#[^#]*','\1','')
+    for [k, file] in items(autofile_list)
+      if k !~ reg_prefix
+        " path does not match func prefix
+        continue
+      endif
+      let file_info = cached_file_contents#CachedFileContents(file,
+              \ s:c['vim_scan_func'], 0)
+      let functions ={}
+      call extend(functions, file_info['declared autoload functions'])
+      call extend(functions, file_info['declared functions'])
+      if has_key(functions, a:func)
+        let line = functions[a:func]['line']
+          call add(results, {'filename': file, 'line_nr': line})
+      endif
+      unlet k
+      unlet file
+    endfor
+  else
+    " copy paste of if .. :(
+    
+    let files = 
+          \ vim_dev_plugin#ListOfNonAutoLoadVimFiles()
+          \ + values(vim_dev_plugin#ListOfAutoloadFiles())
+
+    for file in files
+      let file_info = cached_file_contents#CachedFileContents(file,
+              \ s:c['vim_scan_func'], 0)
+      let functions ={}
+      call extend(functions, file_info['declared functions'])
+      if has_key(functions, a:func)
+        let line = functions[a:func]['line']
+          call add(results, {'filename': file, 'line_nr': line})
+      endif
+    endfor
+  endif
   if len(results) == 0
     let file = substitute(a:func,'#[^#]*$','','') 
     if has_key(autofile_list, file)

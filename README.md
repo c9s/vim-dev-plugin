@@ -93,6 +93,9 @@ fun F2()
   " do something
 endf
 
+And of course you can always vim -V20/tmp/log to see all VimL lines being
+executed.
+
 
 Howto write a good Vim plugin ?
 ===============================
@@ -114,3 +117,25 @@ Hard question. There are different styles. I like the following:
   the user. An example can be seen in autoload/vim_dev_plugin.vim which allows
   the user to overwrite vim_scan_func in his .vimrc in this way:
   let g:vim_dev = { 'vim_scan_func' : ... }
+
+- If you want to let the user set configurations but provide defaults first
+  put all your setup code into an autoload function setting up defaults. Example:
+
+  plugin/foo.vim:
+    call foo_setup#Setup()
+
+  autoload/foo_setup.vim:
+    let s:did_setup = 0
+    fun! foo_setup#Setup()
+      " do this once only:
+      if s:did_setup | return | endif
+      let s:did_setup = 1
+
+      setup mappings etc
+    endf
+
+
+  Then user or other plugins can patch anywhere (.vimrc, au commands):
+
+  call foo_setup#Setup()
+  " do the patching
