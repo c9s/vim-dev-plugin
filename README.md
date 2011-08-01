@@ -96,6 +96,20 @@ endf
 And of course you can always vim -V20/tmp/log to see all VimL lines being
 executed.
 
+How to debug syntax scripts ?
+=============================
+
+Note: echo lines are ignored by Vim. However you can run an indentation
+function manually and read them:
+
+fun MyIndent(lnum)
+  echo 'debug ..'
+  return 1
+endfun
+
+Then you can debug indentation of current line ..
+:echo MyIndent(line('.'))
+^ here you can use debug etc.
 
 Howto write a good Vim plugin ?
 ===============================
