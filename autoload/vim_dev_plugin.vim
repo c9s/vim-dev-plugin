@@ -993,7 +993,7 @@ function! vim_dev_plugin#GetFuncLocation(...)
   let addNonExisting = 1
   if &filetype != 'vim' | return  [] | endif
   let [b,a] = s:SplitCurrentLineAtCursor()
-  let func = matchstr(b,'\zs[#_a-zA-Z0-9]*\ze$').matchstr(a,'^\zs[_#a-zA-Z0-9]*\ze')
+  let func = matchstr(b,'\zs\%(s:\)\?[#_a-zA-Z0-9]*\ze$').matchstr(a,'^\zs[_#a-zA-Z0-9]*\ze')
   let results = vim_dev_plugin#FindFunction(func)
   if addNonExisting
     call extend(results, 
@@ -1028,12 +1028,25 @@ fun! vim_dev_plugin#FindFunction(func) abort
       unlet k
       unlet file
     endfor
+
+    " if file does not exist propose editing it:
+    if len(results) == 0
+      let file = substitute(a:func,'#[^#]*$','','') 
+      if has_key(autofile_list, file)
+        return [autofile_list[file]]
+      endif
+    endif
   else
     " copy paste of if .. :(
-    
-    let files = 
-          \ vim_dev_plugin#ListOfNonAutoLoadVimFiles()
-          \ + values(vim_dev_plugin#ListOfAutoloadFiles())
+    if a:func =~ '^s:'
+      " file local function
+      " TODO write should not be necessary
+      let files = [expand('%')]
+    else
+      let files = 
+            \ vim_dev_plugin#ListOfNonAutoLoadVimFiles()
+            \ + values(vim_dev_plugin#ListOfAutoloadFiles())
+    endif
 
     for file in files
       let file_info = cached_file_contents#CachedFileContents(file,
@@ -1045,12 +1058,6 @@ fun! vim_dev_plugin#FindFunction(func) abort
           call add(results, {'filename': file, 'line_nr': line})
       endif
     endfor
-  endif
-  if len(results) == 0
-    let file = substitute(a:func,'#[^#]*$','','') 
-    if has_key(autofile_list, file)
-      return [autofile_list[file]]
-    endif
   endif
   return results
 endf
