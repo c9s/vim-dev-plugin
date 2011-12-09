@@ -25,6 +25,10 @@ INSTALL
 =======
 
 copy `ftplugin/vim/omni.vim` to your `~/.vim/ftplugin/vim/omni.vim`
+Dependencies see addon-info.json
+
+vim-addon-manager plugin will install all dependencies for you automatically.
+vim-addon- can be found on github.com/MarcWeber tlib is easy to find.
 
 
 USE
