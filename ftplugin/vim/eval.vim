@@ -1,3 +1,8 @@
+if exists('g:loaded_vim_dev_plugin_ftvim_eval')
+    finish
+endif
+
+let g:loaded_vim_dev_plugin_ftvim_eval = 1
 
 fun! EvalVimScriptRegion(s,e)
   let lines = getline(a:s,a:e)
