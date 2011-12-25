@@ -1,3 +1,9 @@
+"===  Load Always  ===                                                    {{{1
+command! -buffer -range Eval  :cal EvalVimScriptRegion(<line1>,<line2>)
+vnoremap <buffer> <silent> <cr>   :Eval<CR>
+
+
+"===  Load Once  ===                                                      {{{1
 if exists('g:loaded_vim_dev_plugin_ftvim_eval')
     finish
 endif
@@ -29,5 +35,3 @@ fun! EvalVimScriptRegion(s,e)
   endif
 endf
 
-command! -buffer -range Eval  :cal EvalVimScriptRegion(<line1>,<line2>)
-vnoremap <buffer> <silent> <cr>   :Eval<CR>
