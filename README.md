@@ -100,6 +100,8 @@ endf
 And of course you can always vim -V20/tmp/log to see all VimL lines being
 executed.
 
+Also see :h breaka etc
+
 How to debug syntax scripts ?
 =============================
 
