@@ -81,6 +81,11 @@ use :debug a-command then (c)ontinue (r)eturn (n)ext (s)tep ..
 if you get stackt traces of dict functions you can find the hints about the
 declaration by :function {77} or such.
 
+output var contents:
+  - echoe string(x)  
+  - echo x
+or the like
+
 How to debug all calls of a function F?
 
 change
@@ -101,6 +106,14 @@ And of course you can always vim -V20/tmp/log to see all VimL lines being
 executed.
 
 Also see :h breaka etc
+
+If you get error messages suchas 23.34.23
+line 3 This mean that the methods 23 34 23 are memebers of dictionaries.
+You can view the code by :function{23}
+(TODO: Add this to VimLGotoLastError)
+
+If you get traces VimLGotoLastError tries to find the location where the error happened
+adding the error message. It often works - but not aways
 
 How to debug syntax scripts ?
 =============================
