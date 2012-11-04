@@ -412,7 +412,7 @@ fun! vim_dev_plugin#VimOmniComplete(findstart, base) "{{{
       let start -= 1
     endwhile
 
-    " b: g: s: prefix?
+    " b: g: s: v: prefix?
     let b:prefix_completion =
           \ (start >= 2 && line[start-1] == ':')
             \ ? line[start-2]
@@ -449,6 +449,12 @@ fun! vim_dev_plugin#VimOmniComplete(findstart, base) "{{{
     " a: completion
     if b:prefix_completion == 'a'
       call vim_dev_plugin#ACompletion()
+      return []
+    endif
+
+    " v: completion
+    if b:prefix_completion == 'v'
+      call vim_dev_plugin#VCompletion()
       return []
     endif
 
@@ -830,6 +836,21 @@ fun! vim_dev_plugin#CompleteFunLocalLets()
   endwhile
 endf
 
+
+" v:completion
+fun! vim_dev_plugin#VCompletion()
+  sp
+  h eval.txt
+  let items = map(filter(getline(0, '$'),'v:val =~ "^v:"'),'matchstr(v:val, "v:\\zs[^ \t]*\\ze")')
+  bw!
+  for i in items
+    if !s:Matches(i) | continue | endif
+    " a:0 a:1 etc are not worth adding. They are too short
+    call complete_add({
+          \ 'word': i
+          \ })
+  endfor
+endf
 
 " complete a: (arg names)
 fun! vim_dev_plugin#ACompletion()
