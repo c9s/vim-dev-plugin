@@ -495,7 +495,7 @@ fun! vim_dev_plugin#VimOmniComplete(findstart, base) "{{{
 
     let comps = [ ]
     let lines = getline(1,'$')
-    let f_ptn =  '\(^\s*fun[ction]*!\?\s\+\)\@<=\([sgb]:\I*\i*\|\I\i*\)'
+    let f_ptn =  '\(^\s*fun[ction]*!\?\s\+\)\@<=\([sgb]:[a-zA-Z#0-9_]\+\|[a-zA-Z#0-9_]\+\)'
     let v_ptn = '\(^\s*let\s\+\)\@<=\([a-zA-Z0-9:_]\+\)'
     let c_ptn = '\(^\s*com[mand]\*!\?\s\+\)\@<=[a-zA-Z]*'
     let v_comps = [ ]
