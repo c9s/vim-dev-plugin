@@ -82,25 +82,48 @@ if you get stackt traces of dict functions you can find the hints about the
 declaration by :function {77} or such.
 
 output var contents:
-  - echoe string(x)  
-  - echo x
+
+
+    echoe string(x)  
+    echo x
+
+    messages will redisplay everything printed by echoe
+
+
 or the like
 
 How to debug all calls of a function F?
 
 change
-fun F()
-  " do something
-endf
+
+
+
+    fun F()
+      " do something
+    endf
+
+
 
 to 
-fun F(...)
-  debug return call(function('F2'), a:000)
-endf
 
-fun F2()
-  " do something
-endf
+
+
+    fun F(...)
+      debug return call(function('F2'), a:000)
+    endf
+
+    fun F2()
+      " do something
+    endf
+
+
+
+
+then you can use viml debugger:
+
+    (c)ontinue, (s)tep, (n)ext
+
+and of course you can just type any viml code such as echo to debug vars
 
 And of course you can always vim -V20/tmp/log to see all VimL lines being
 executed.
